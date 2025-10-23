@@ -3,9 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Crossy Road Clone</title>
+    <title>Steem Hop</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet" />
+    <!-- fontawesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
+      body {
+        font-family: "Fredoka One", cursive;
+        background-color: #fffbea;
+        overflow-x: hidden;
+      }
       @keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
@@ -19,141 +27,152 @@
         max-width: 100%;
         height: auto;
       }
-      body {
-        overflow-x: hidden;
-      }
-      /* Hide scrollbar */
       ::-webkit-scrollbar { width: 6px; height: 6px; }
-      ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+      ::-webkit-scrollbar-thumb { background: #EAB515; border-radius: 10px; }
+      .gold-btn {
+        background: linear-gradient(90deg, #EAB515, #D48905);
+        color: white;
+      }
+      .gold-btn:hover {
+        background: linear-gradient(90deg, #FBD63D, #EAB515);
+        box-shadow: 0 0 10px #EAB515;
+      }
+      #bottom-nav button.active {
+        color: #D48905;
+      }
     </style>
   </head>
 
-  <body class="min-h-screen bg-gray-100 text-gray-800 font-sans overflow-x-hidden">
+  <body class="min-h-screen text-gray-800">
     <!-- LOGIN SCREEN -->
-    <div id="login-screen" class="bg-white shadow-lg rounded-xl p-8 w-full max-w-sm mx-auto text-center fade-in border border-gray-200 my-auto">
-      <h3 class="text-2xl font-bold text-gray-800 mb-6">🐥 Crossy Road Login</h3>
+    <div id="login-screen" class="bg-white shadow-lg rounded-xl p-8 w-full max-w-sm mx-auto text-center fade-in border border-[#EAB515] mt-20">
+      <img src="https://res.cloudinary.com/dwoz2jo93/image/upload/v1761156761/STEEMHOP_FINAL_LOGO_tnkkvf.png"
+           alt="Steem Hop Logo" class="w-28 h-28 mx-auto mb-4" />
+      <h3 class="text-2xl font-extrabold text-[#D48905] mb-6">Steem Hop Login</h3>
       <input
         id="user"
         placeholder="Enter your Steem username"
-        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:outline-none mb-4"
+        class="w-full px-4 py-2 border border-[#EAB515] rounded-md focus:ring-2 focus:ring-[#EAB515] focus:outline-none mb-4"
       />
-      <button
-        id="sign"
-        class="w-full bg-green-600 text-white font-semibold py-2 rounded-md hover:bg-green-700 transition"
-      >
-        Login with Keychain
-      </button>
+      <button id="sign" class="w-full py-2 rounded-md gold-btn font-semibold transition">Login with Keychain</button>
       <p id="status" class="mt-4 text-sm text-gray-600"></p>
     </div>
 
     <!-- MAIN APP -->
-    <div id="app-screen" class="hidden flex flex-col sm:flex-row w-full min-h-screen fade-in bg-gray-50 overflow-hidden relative">
+    <div id="app-screen" class="hidden flex flex-col sm:flex-row w-full min-h-screen fade-in bg-[#FFFBEA] overflow-hidden relative">
 
       <!-- Mobile Navbar -->
-      <div class="sm:hidden bg-gray-800 text-white p-4 flex items-center justify-between">
-        <h2 class="text-lg font-bold">🐔 Crossy Road</h2>
-        <button id="menu-toggle" class="text-white focus:outline-none text-2xl">☰</button>
+      <div class="sm:hidden bg-[#D48905] text-white p-2  flex items-center justify-between">
+        <h2 class="text-lg font-bold flex items-center gap-2">
+          <img src="https://res.cloudinary.com/dwoz2jo93/image/upload/v1761156761/STEEMHOP_FINAL_LOGO_tnkkvf.png"
+               alt="Steem Hop Logo"
+               class="w-6 h-6 object-contain  rounded-full" />
+          <span>Steem Hop</span>
+        </h2>
+        <button id="logout-mobile" class="gold-btn px-3 py-2 rounded-md">
+          <i class="fa-solid fa-right-from-bracket text-white text-lg"></i>
+        </button>
       </div>
 
       <!-- Sidebar -->
-      <div id="sidebar" class="bg-gray-800 text-white sm:flex sm:flex-col fixed sm:static top-0 left-0 h-full sm:h-auto w-64 transform -translate-x-full sm:translate-x-0 transition-transform duration-300 z-50 shadow-lg">
+      <div id="sidebar" class="bg-gradient-to-b from-[#FEEA6E] to-[#EAB515] text-[#4b3a00] sm:flex sm:flex-col fixed sm:static top-0 left-0 h-full sm:h-auto w-64 transform -translate-x-full sm:translate-x-0 transition-transform duration-300 z-50 shadow-lg">
         <div class="p-5">
-          <h2 class="text-xl font-bold mb-6 text-center border-b border-white/20 pb-2">🐔 Crossy Road</h2>
+          <h2 class="text-xl font-bold mb-6 flex items-center gap-2 border-b border-[#D48905]/30 pb-2 text-[#D48905]">
+            <img src="https://res.cloudinary.com/dwoz2jo93/image/upload/v1761156761/STEEMHOP_FINAL_LOGO_tnkkvf.png"
+                 alt="Steem Hop Logo"
+                 class="w-6 h-6 object-contain  rounded-full" />
+            <span>Steem Hop</span>
+          </h2>
 
-          <button id="tab-dashboard" class="tab-btn flex items-center gap-2 bg-gray-700 rounded-md px-4 py-2 mb-2 hover:bg-gray-600 transition w-full">
+          <button id="tab-dashboard" class="tab-btn flex items-center gap-2 bg-[#EAB515] rounded-md px-4 py-2 mb-2 hover:bg-[#D48905] text-white transition w-full">
             🏠 <span>Dashboard</span>
           </button>
-          <button id="tab-game1" class="tab-btn flex items-center gap-2 bg-gray-700 rounded-md px-4 py-2 mb-2 hover:bg-gray-600 transition w-full">
+          <button id="tab-game1" class="tab-btn flex items-center gap-2 bg-[#EAB515] rounded-md px-4 py-2 mb-2 hover:bg-[#D48905] text-white transition w-full">
             🎮 <span>Play Game</span>
           </button>
-          <button id="tab-leaderboard" class="tab-btn flex items-center gap-2 bg-gray-700 rounded-md px-4 py-2 mb-2 hover:bg-gray-600 transition w-full">
+          <button id="tab-leaderboard" class="tab-btn flex items-center gap-2 bg-[#EAB515] rounded-md px-4 py-2 mb-2 hover:bg-[#D48905] text-white transition w-full">
             🏆 <span>Leaderboard</span>
           </button>
 
-          <div class="mt-6 border-t border-white/20 pt-4">
-            <button id="logout" class="w-full bg-red-500 py-2 rounded hover:bg-red-600 transition">🚪 Logout</button>
+          <div class="mt-6 border-t border-[#EAB515]/40 pt-4">
+            <button id="logout" class="w-full py-2 rounded-md gold-btn">🚪 Logout</button>
           </div>
         </div>
       </div>
 
-      <!-- Overlay for mobile menu -->
-      <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40 sm:hidden"></div>
-
       <!-- Main Content -->
       <div class="flex-1 p-4 sm:p-10 overflow-y-auto fade-in sm:ml-0 ml-0">
-        
+
         <!-- Dashboard -->
         <div id="dashboard" class="tab-content">
-          <h1 class="text-2xl sm:text-3xl font-extrabold mb-6 text-gray-800 flex flex-wrap items-center gap-2">
-            🏠 Dashboard
-            <span class="text-sm text-gray-500 font-normal">— Your Steem Profile & Game Stats</span>
+          <h1 class="text-3xl font-extrabold mb-6 ms-5 text-[#D48905] flex items-center gap-3">
+            Dashboard
           </h1>
 
-          <!-- Profile Card -->
-          <div class="bg-gradient-to-r from-green-50 to-blue-50 p-6 sm:p-8 rounded-2xl shadow-md border border-gray-200 hover:shadow-xl">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-6 text-center sm:text-left">
-
-              <img id="profileImage" src="https://via.placeholder.com/120" alt="Profile"
-                   class="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-green-500 shadow-md object-cover mx-auto sm:mx-0 hover:scale-105 transition-transform duration-300">
-
-              <div class="mt-4 sm:mt-0">
-                <h2 class="text-xl sm:text-2xl font-bold text-gray-800 flex items-center justify-center sm:justify-start gap-2">
+          <div class="bg-white border border-[#EAB515]/60 rounded-3xl shadow-md hover:shadow-lg transition-all duration-300">
+            <div class="bg-gradient-to-r from-[#FEEA6E] via-[#FBD63D] to-[#EAB515] rounded-t-3xl p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:space-x-6 text-center sm:text-left">
+              <div class="flex justify-center sm:justify-start">
+                <img id="profileImage" src="https://via.placeholder.com/120" alt="Profile"
+                     class="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-[#D48905] shadow-md object-cover hover:scale-105 transition-transform duration-300">
+              </div>
+              <div class="mt-4 sm:mt-0 flex-1">
+                <h2 class="text-2xl font-bold text-[#4b3a00] flex items-center justify-center sm:justify-start gap-2">
                   <span id="username-display">Username</span>
-                  <span id="userRank" class="text-sm text-gray-600 font-normal">(Rank)</span>
+                  <span id="userRank" class="text-sm text-[#4b3a00]/70 font-normal">(Rank)</span>
                 </h2>
-                <p class="text-xs sm:text-sm text-gray-500 mt-1 italic">“Keep crossing roads and climb to the top of the leaderboard!”</p>
-
-                <div class="mt-4 w-full bg-gray-200 rounded-full h-3">
-                  <div class="bg-green-500 h-3 rounded-full" style="width: 70%;" id="progressBar"></div>
+                <p class="text-sm text-[#4b3a00]/70 mt-1 italic">“Welcome back, keep hopping higher on Steem!”</p>
+                <div class="mt-4 w-full bg-[#ffffff90] rounded-full h-3 overflow-hidden">
+                  <div class="bg-[#D48905] h-3 rounded-full transition-all duration-700" style="width:70%;" id="progressBar"></div>
                 </div>
-                <p class="text-xs text-gray-600 mt-1">Progress to next rank</p>
+                <p class="text-xs text-[#4b3a00]/60 mt-1">Progress to next rank</p>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-              <div class="bg-white border border-green-200 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6 bg-[#fffdf5] rounded-b-3xl">
+              <div class="bg-white border border-[#EAB515]/50 rounded-2xl p-5 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="text-xs sm:text-sm text-gray-500">💎 Total Points</p>
-                    <h3 class="text-2xl sm:text-3xl font-extrabold text-green-700 mt-1">
+                    <p class="text-sm text-[#4b3a00]/70">💎 Total Points</p>
+                    <h3 class="text-3xl font-extrabold text-[#D48905] mt-1">
                       <span id="userPoints">0</span>
                     </h3>
                   </div>
-                  <div class="text-green-500 text-3xl sm:text-4xl">🎯</div>
+                  <div class="text-[#EAB515] text-4xl">🎯</div>
                 </div>
               </div>
-
-              <div class="bg-white border border-yellow-200 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-transform hover:-translate-y-1">
+              <div class="bg-white border border-[#EAB515]/50 rounded-2xl p-5 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="text-xs sm:text-sm text-gray-500">⭐ Reputation</p>
-                    <h3 class="text-2xl sm:text-3xl font-extrabold text-yellow-600 mt-1">
+                    <p class="text-sm text-[#4b3a00]/70">⭐ Reputation</p>
+                    <h3 class="text-3xl font-extrabold text-[#EAB515] mt-1">
                       <span id="userReputation">0</span>
                     </h3>
                   </div>
-                  <div class="text-yellow-500 text-3xl sm:text-4xl">🔥</div>
+                  <div class="text-[#D48905] text-4xl">🔥</div>
                 </div>
               </div>
             </div>
           </div>
+          <br><br><br>
         </div>
 
         <!-- Game -->
         <div id="game1" class="tab-content hidden fade-in text-center">
-          <h1 class="text-2xl sm:text-3xl font-bold mb-4 text-gray-800">🎮 Crossy Road Clone</h1>
-          <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center">
+          <h1 class="text-2xl sm:text-3xl font-bold mb-4 text-[#D48905]">🎮 Steem Hop Game</h1>
+          <div class="bg-white p-4 rounded-lg shadow-sm border border-[#EAB515] flex flex-col items-center">
             <canvas id="gameCanvas" width="400" height="500"></canvas>
-            <button id="startGame" class="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Start Game</button>
-            <p id="score" class="mt-3 text-gray-700 text-sm font-semibold">Score: 0</p>
+            <button id="startGame" class="mt-4 gold-btn px-4 py-2 rounded text-white">Start Game</button>
+            <p id="score" class="mt-3 text-[#4b3a00] text-sm font-semibold">Score: 0</p>
           </div>
+          <br><br><br>
         </div>
 
         <!-- Leaderboard -->
         <div id="leaderboard" class="tab-content hidden fade-in">
-          <h1 class="text-2xl sm:text-3xl font-bold mb-4 text-gray-800">🏆 Leaderboard</h1>
-          <div class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200">
-            <ul id="leaderList" class="list-decimal pl-5 sm:pl-6 space-y-2 text-gray-700 text-sm sm:text-base"></ul>
-            <button id="clearLeaderboard" class="m-2 sm:m-4 bg-red-600 text-white px-3 sm:px-4 py-2 rounded hover:bg-red-700 transition text-sm sm:text-base">
+          <h1 class="text-2xl sm:text-3xl font-bold mb-4 text-[#D48905]">🏆 Leaderboard</h1>
+          <div class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-[#EAB515]">
+            <ul id="leaderList" class="list-decimal pl-5 sm:pl-6 space-y-2 text-[#4b3a00] text-sm sm:text-base"></ul>
+            <button id="clearLeaderboard" class="m-2 sm:m-4 gold-btn px-3 sm:px-4 py-2 rounded text-white">
               🗑️ Clear
             </button>
           </div>
@@ -161,48 +180,341 @@
       </div>
     </div>
 
+    <!-- ✅ Mobile Bottom Navbar (hidden until login) -->
+     <!-- bg-gradient-to-r from-[#FEEA6E] to-[#EAB515] shadow-md -->
+    <div id="bottom-nav"
+     class="sm:hidden fixed bottom-0 mb-1 left-0 w-full flex justify-around py-2 text-[#4b3a00] text-2xl hidden ">
+      <button id="mobile-dashboard" class="active flex flex-col items-center">
+        <i class="fa-solid fa-house"></i>
+      </button>
+      <button id="mobile-game" class="flex flex-col items-center">
+        <i class="fa-solid fa-gamepad"></i>
+      </button>
+      <button id="mobile-leaderboard" class="flex flex-col items-center">
+        <i class="fa-solid fa-trophy"></i>
+      </button>
+    </div>
+
     <script>
-      // ✅ Toggle Mobile Menu
       const menuBtn = document.getElementById("menu-toggle");
-      const sidebar = document.getElementById("sidebar");
-      const overlay = document.getElementById("overlay");
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
 
-      if (menuBtn) {
-        menuBtn.addEventListener("click", () => {
-          const isOpen = sidebar.classList.contains("translate-x-0");
-          sidebar.classList.toggle("translate-x-0");
-          sidebar.classList.toggle("-translate-x-full");
-          overlay.classList.toggle("hidden");
-        });
+  if (menuBtn) {
+    menuBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("translate-x-0");
+      sidebar.classList.toggle("-translate-x-full");
+      overlay.classList.toggle("hidden");
+    });
+    overlay.addEventListener("click", () => {
+      sidebar.classList.remove("translate-x-0");
+      sidebar.classList.add("-translate-x-full");
+      overlay.classList.add("hidden");
+    });
+  }
 
-        overlay.addEventListener("click", () => {
-          sidebar.classList.remove("translate-x-0");
-          sidebar.classList.add("-translate-x-full");
-          overlay.classList.add("hidden");
-        });
+
+  // ✅ Auto-login on page reload (persistent session)
+  window.addEventListener("load", () => {
+    const savedUser = localStorage.getItem("steemhop_user");
+    if (savedUser) {
+      loginScreen.classList.add("hidden");
+      appScreen.classList.remove("hidden");
+      document.getElementById("username-display").textContent = savedUser;
+      loadUserProfile(savedUser);
+      loadLeaderboard();
+      // Optional: friendly message
+      console.log(`👋 Welcome back, ${savedUser}!`);
+    }
+  });
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const loginScreen = document.getElementById("login-screen");
+    const appScreen = document.getElementById("app-screen");
+    const status = document.getElementById("status");
+
+    // ✅ Check if user already logged in before showing UI
+    const savedUser = localStorage.getItem("steemhop_user");
+    if (savedUser) {
+      loginScreen.classList.add("hidden");
+      appScreen.classList.remove("hidden");
+      document.getElementById("username-display").textContent = savedUser;
+      loadUserProfile(savedUser);
+      loadLeaderboard();
+    } else {
+      loginScreen.classList.remove("hidden");
+      appScreen.classList.add("hidden");
+    }
+
+    // ✅ Now reveal the body (no flicker)
+    document.body.style.visibility = "visible";
+  });
+  // ✅ Login with Keychain (and save session)
+  document.getElementById("sign").onclick = () => {
+    const user = document.getElementById("user").value.trim();
+    if (!user) return alert("⚠️ Please enter your Steem username.");
+    if (!window.steem_keychain) return alert("❌ Steem Keychain not detected.");
+
+    status.textContent = "⏳ Logging in...";
+    window.steem_keychain.requestSignBuffer(
+      user,
+      "hello_from_steem_hop",
+      "Posting",
+      (r) => {
+        if (r.success) {
+          // ✅ Save user session
+          localStorage.setItem("steemhop_user", user);
+
+          loginScreen.classList.add("hidden");
+          appScreen.classList.remove("hidden");
+          document.getElementById("username-display").textContent = user;
+          loadUserProfile(user);
+          loadLeaderboard();
+        } else {
+          status.textContent = "❌ Login failed: " + r.message;
+        }
       }
+    );
+  };
 
+  // ✅ Fetch Steem user profile
+ async function loadUserProfile(username) {
+  try {
+    const res = await fetch("https://api.steemit.com", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        method: "condenser_api.get_accounts",
+        params: [[username]],
+        id: 1,
+      }),
+    });
+
+    // ✅ Check for network response
+    if (!res.ok) throw new Error("Network error: " + res.status);
+
+    const json = await res.json();
+
+    // ✅ Handle empty / invalid response
+    if (!json.result || !json.result.length) {
+      alert("⚠️ No user found for: " + username);
+      return;
+    }
+
+    const user = json.result[0];
+    const metadata = JSON.parse(user.posting_json_metadata || "{}");
+
+    const profileImg =
+      metadata.profile?.profile_image || "https://via.placeholder.com/100";
+    const reputation = Math.floor(user.reputation / 1000000);
+    const rank =
+      reputation >= 70
+        ? "Legend 🏆"
+        : reputation >= 60
+        ? "Pro ⭐"
+        : "Newbie 🐣";
+    const points = user.posting_rewards || 0;
+
+    // ✅ Update UI safely
+    document.getElementById("profileImage").src = profileImg;
+    document.getElementById("userReputation").textContent = reputation;
+    document.getElementById("userPoints").textContent = points;
+    document.getElementById("userRank").textContent = `(${rank})`;
+
+    console.log("✅ Profile loaded successfully for:", username);
+  } catch (err) {
+    console.error("Profile load error:", err);
+    alert("⚠️ Unable to load Steem profile data for " + username);
+  }
+}
+
+
+
+  // ✅ Logout (clears saved session)
+  document.getElementById("logout").onclick = () => {
+    localStorage.removeItem("steemhop_user");
+    appScreen.classList.add("hidden");
+    loginScreen.classList.remove("hidden");
+    document.getElementById("user").value = "";
+    status.textContent = "";
+  };
+
+  // ✅ Tab switching
+  const tabs = document.querySelectorAll(".tab-btn");
+  const contents = document.querySelectorAll(".tab-content");
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const targetId = tab.id.replace("tab-", "");
+      contents.forEach((c) => c.classList.add("hidden"));
+      document.getElementById(targetId).classList.remove("hidden");
+      tabs.forEach((t) => t.classList.remove("bg-[#D48905]"));
+      tab.classList.add("bg-[#D48905]");
+      if (targetId === "leaderboard") loadLeaderboard();
+    });
+  });
+ 
+  // 🎮 Game Logic
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+  const startBtn = document.getElementById("startGame");
+  const scoreEl = document.getElementById("score");
+  const leaderList = document.getElementById("leaderList");
+  let player, cars, score, gameOver, gameInterval;
+
+  function initGame() {
+    player = { x: 180, y: 450, size: 20 };
+    cars = [];
+    score = 0;
+    gameOver = false;
+    for (let i = 0; i < 5; i++) {
+      cars.push({
+        x: Math.random() * 360,
+        y: i * -120,
+        w: 40,
+        h: 20,
+        speed: 2 + Math.random() * 3,
+      });
+    }
+  }
+
+  function drawPlayer() {
+    ctx.fillStyle = "yellow";
+    ctx.fillRect(player.x, player.y, player.size, player.size);
+  }
+
+  function drawCars() {
+    ctx.fillStyle = "red";
+    cars.forEach((c) => {
+      ctx.fillRect(c.x, c.y, c.w, c.h);
+      c.y += c.speed;
+      if (c.y > 500) {
+        c.y = -60;
+        c.x = Math.random() * 360;
+        score++;
+      }
+      if (
+        player.x < c.x + c.w &&
+        player.x + player.size > c.x &&
+        player.y < c.y + c.h &&
+        player.y + player.size > c.y
+      ) {
+        endGame();
+      }
+    });
+  }
+
+  function drawRoad() {
+    ctx.fillStyle = "#444";
+    ctx.fillRect(0, 0, 400, 500);
+    ctx.strokeStyle = "#888";
+    for (let i = 0; i < 5; i++) {
+      ctx.beginPath();
+      ctx.moveTo(0, i * 100);
+      ctx.lineTo(400, i * 100);
+      ctx.stroke();
+    }
+  }
+
+  function updateGame() {
+    if (gameOver) return;
+    ctx.clearRect(0, 0, 400, 500);
+    drawRoad();
+    drawCars();
+    drawPlayer();
+    scoreEl.textContent = "Score: " + score;
+  }
+
+  function endGame() {
+    clearInterval(gameInterval);
+    gameOver = true;
+    alert("💀 Game Over! Your score: " + score);
+    updateLeaderboard(score);
+  }
+
+  async function updateLeaderboard(score) {
+    const username =
+      document.getElementById("username-display").textContent || "Guest";
+    await fetch("save_score.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body:
+        `username=${encodeURIComponent(username)}&score=${encodeURIComponent(
+          score
+        )}`,
+    });
+    loadLeaderboard();
+  }
+
+  async function loadLeaderboard() {
+    const res = await fetch("get_leaderboard.php");
+    const data = await res.json();
+    leaderList.innerHTML = "";
+    data.forEach((item) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<b>${item.username}</b> — ${item.score} pts`;
+      leaderList.appendChild(li);
+    });
+  }
+
+  document.getElementById("clearLeaderboard").onclick = async () => {
+    if (!confirm("⚠️ Are you sure you want to clear all leaderboard data?"))
+      return;
+    const res = await fetch("clear_leaderboard.php", { method: "POST" });
+    const msg = await res.text();
+    alert(msg);
+    loadLeaderboard();
+  };
+
+  startBtn.onclick = () => {
+    clearInterval(gameInterval);
+    initGame();
+    gameInterval = setInterval(updateGame, 40);
+  };
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft" && player.x > 0) player.x -= 20;
+    if (e.key === "ArrowRight" && player.x < 380) player.x += 20;
+    if (e.key === "ArrowUp" && player.y > 0) player.y -= 20;
+    if (e.key === "ArrowDown" && player.y < 480) player.y += 20;
+  });
+   
+
+      // Bottom nav switching
+      const mobileTabs = {
+        "mobile-dashboard": "dashboard",
+        "mobile-game": "game1",
+        "mobile-leaderboard": "leaderboard"
+      };
+
+      Object.keys(mobileTabs).forEach(id => {
+        document.getElementById(id).addEventListener("click", () => {
+          Object.values(mobileTabs).forEach(t => document.getElementById(t).classList.add("hidden"));
+          document.getElementById(mobileTabs[id]).classList.remove("hidden");
+          Object.keys(mobileTabs).forEach(b => document.getElementById(b).classList.remove("active"));
+          document.getElementById(id).classList.add("active");
+        });
+      });
       const loginScreen = document.getElementById("login-screen");
       const appScreen = document.getElementById("app-screen");
+      const bottomNav = document.getElementById("bottom-nav");
       const status = document.getElementById("status");
 
-      // ✅ Login Simulation
+      // ✅ Login logic
       document.getElementById("sign").onclick = () => {
         const user = document.getElementById("user").value.trim();
         if (!user) return alert("⚠️ Please enter your Steem username.");
         if (!window.steem_keychain) return alert("❌ Steem Keychain not detected.");
 
         status.textContent = "⏳ Logging in...";
-        window.steem_keychain.requestSignBuffer(user, "hello_from_crossy_road", "Posting", (r) => {
+        window.steem_keychain.requestSignBuffer(user, "hello_from_steem_hop", "Posting", (r) => {
           if (r.success) {
+            localStorage.setItem("steemhop_user", user);
             loginScreen.classList.add("hidden");
             appScreen.classList.remove("hidden");
+            bottomNav.classList.remove("hidden"); // ✅ show bottom navbar after login
             document.getElementById("username-display").textContent = user;
-
-            // 🧠 Load Steem profile data
             loadUserProfile(user);
-
-            // ✅ Load leaderboard from database on login
             loadLeaderboard();
           } else {
             status.textContent = "❌ Login failed: " + r.message;
@@ -210,191 +522,27 @@
         });
       };
 
-     
-   // 🧠 Dynamic: Fetch live user data from the Steem API
-async function loadUserProfile(username) {
-  try {
-    // Fetch live data for the specific username
-    const res = await fetch(`https://api.steemit.com`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        method: "condenser_api.get_accounts",
-        params: [[username]],
-        id: 1
-      })
-    });
-
-    const json = await res.json();
-    const user = json.result[0];
-
-    // ✅ Extract data safely
-    const metadata = JSON.parse(user.posting_json_metadata || "{}");
-    const profileImg = metadata.profile?.profile_image || "https://via.placeholder.com/100";
-    const reputation = parseInt(user.reputation / 1000000);
-    const rank = reputation >= 70 ? "Legend 🏆" : reputation >= 60 ? "Pro ⭐" : "Newbie 🐣";
-    const points = user.posting_rewards || 0;
-
-    // ✅ Update UI
-    document.getElementById("profileImage").src = profileImg;
-    document.getElementById("username-display").textContent = user.name;
-    document.getElementById("userReputation").textContent = reputation;
-    document.getElementById("userPoints").textContent = points;
-    document.getElementById("userRank").textContent = `(${rank})`;
-
-  } catch (err) {
-    console.error("Error fetching Steem user data:", err);
-    alert("⚠️ Unable to load Steem profile data for " + username);
-  }
-}
-
-
-      // Logout
-      document.getElementById("logout").onclick = () => {
+      // ✅ Logout buttons
+      const logoutDesktop = document.getElementById("logout");
+      const logoutMobile = document.getElementById("logout-mobile");
+      [logoutDesktop, logoutMobile].forEach(btn => btn.addEventListener("click", () => {
+        localStorage.removeItem("steemhop_user");
         appScreen.classList.add("hidden");
         loginScreen.classList.remove("hidden");
-        document.getElementById("user").value = "";
-        status.textContent = "";
-      };
+        bottomNav.classList.add("hidden"); // ✅ hide navbar again
+      }));
 
-      // Tabs
-      const tabs = document.querySelectorAll(".tab-btn");
-      const contents = document.querySelectorAll(".tab-content");
-      tabs.forEach((tab) => {
-        tab.addEventListener("click", () => {
-          const targetId = tab.id.replace("tab-", "");
-          contents.forEach((c) => c.classList.add("hidden"));
-          document.getElementById(targetId).classList.remove("hidden");
-          tabs.forEach((t) => t.classList.remove("bg-gray-600"));
-          tab.classList.add("bg-gray-600");
-
-          if (targetId === "leaderboard") loadLeaderboard();
-        });
-      });
-
-      // 🎮 Game Logic
-      const canvas = document.getElementById("gameCanvas");
-      const ctx = canvas.getContext("2d");
-      const startBtn = document.getElementById("startGame");
-      const scoreEl = document.getElementById("score");
-      const leaderList = document.getElementById("leaderList");
-
-      let player, cars, score, gameOver, gameInterval;
-
-      function initGame() {
-        player = { x: 180, y: 450, size: 20 };
-        cars = [];
-        score = 0;
-        gameOver = false;
-        for (let i = 0; i < 5; i++) {
-          cars.push({
-            x: Math.random() * 360,
-            y: i * -120,
-            w: 40,
-            h: 20,
-            speed: 2 + Math.random() * 3
-          });
+      // ✅ Auto-login check
+      window.addEventListener("load", () => {
+        const savedUser = localStorage.getItem("steemhop_user");
+        if (savedUser) {
+          loginScreen.classList.add("hidden");
+          appScreen.classList.remove("hidden");
+          bottomNav.classList.remove("hidden"); // ✅ show navbar for returning user
+          document.getElementById("username-display").textContent = savedUser;
+          loadUserProfile(savedUser);
+          loadLeaderboard();
         }
-      }
-
-      function drawPlayer() {
-        ctx.fillStyle = "yellow";
-        ctx.fillRect(player.x, player.y, player.size, player.size);
-      }
-
-      function drawCars() {
-        ctx.fillStyle = "red";
-        cars.forEach((c) => {
-          ctx.fillRect(c.x, c.y, c.w, c.h);
-          c.y += c.speed;
-          if (c.y > 500) {
-            c.y = -60;
-            c.x = Math.random() * 360;
-            score++;
-          }
-          if (
-            player.x < c.x + c.w &&
-            player.x + player.size > c.x &&
-            player.y < c.y + c.h &&
-            player.y + player.size > c.y
-          ) {
-            endGame();
-          }
-        });
-      }
-
-      function drawRoad() {
-        ctx.fillStyle = "#444";
-        ctx.fillRect(0, 0, 400, 500);
-        ctx.strokeStyle = "#888";
-        for (let i = 0; i < 5; i++) {
-          ctx.beginPath();
-          ctx.moveTo(0, i * 100);
-          ctx.lineTo(400, i * 100);
-          ctx.stroke();
-        }
-      }
-
-      function updateGame() {
-        if (gameOver) return;
-        ctx.clearRect(0, 0, 400, 500);
-        drawRoad();
-        drawCars();
-        drawPlayer();
-        scoreEl.textContent = "Score: " + score;
-      }
-
-      function endGame() {
-        clearInterval(gameInterval);
-        gameOver = true;
-        alert("💀 Game Over! Your score: " + score);
-        updateLeaderboard(score);
-      }
-
-      // ✅ Save new score and refresh leaderboard
-      async function updateLeaderboard(score) {
-        const username = document.getElementById("username-display").textContent || "Guest";
-        await fetch("save_score.php", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: `username=${encodeURIComponent(username)}&score=${encodeURIComponent(score)}`
-        });
-        loadLeaderboard();
-      }
-
-      // ✅ Load leaderboard from database
-      async function loadLeaderboard() {
-        const res = await fetch("get_leaderboard.php");
-        const data = await res.json();
-        leaderList.innerHTML = "";
-        data.forEach((item) => {
-          const li = document.createElement("li");
-          li.innerHTML = `<b>${item.username}</b> — ${item.score} pts`;
-          leaderList.appendChild(li);
-        });
-      }
-
-      // 🗑️ Clear Leaderboard
-      document.getElementById("clearLeaderboard").onclick = async () => {
-        if (!confirm("⚠️ Are you sure you want to clear all leaderboard data?")) return;
-        const res = await fetch("clear_leaderboard.php", { method: "POST" });
-        const msg = await res.text();
-        alert(msg);
-        loadLeaderboard();
-      };
-
-      startBtn.onclick = () => {
-        clearInterval(gameInterval);
-        initGame();
-        gameInterval = setInterval(updateGame, 40);
-      };
-
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowLeft" && player.x > 0) player.x -= 20;
-        if (e.key === "ArrowRight" && player.x < 380) player.x += 20;
-        if (e.key === "ArrowUp" && player.y > 0) player.y -= 20;
-        if (e.key === "ArrowDown" && player.y < 480) player.y += 20;
       });
     </script>
   </body>
