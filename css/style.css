@@ -1,3 +1,5 @@
+
+/* --- Your Custom Styles --- */
 body {
   font-family: "Fredoka One", cursive;
   background-color: #fffbea;
@@ -30,11 +32,12 @@ canvas {
   background: linear-gradient(90deg, #FBD63D, #EAB515);
   box-shadow: 0 0 10px #EAB515;
 }
+
 #bottom-nav button.active {
   color: #D48905;
 }
 
-/* Loader styles */
+/* --- Loader styles --- */
 #loader-screen {
   opacity: 0;
   pointer-events: none;
@@ -49,4 +52,16 @@ canvas {
   border-style: solid;
   border-color: #FEEA6E transparent #EAB515 transparent;
   border-width: 4px;
+}
+
+/* --- Progress Bar Animation --- */
+#progressBar {
+  transform-origin: left center; /* Fill left to right */
+  transform: scaleX(0);
+  animation: fillBar 1.2s ease-in-out forwards;
+}
+
+@keyframes fillBar {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }

@@ -1,4 +1,5 @@
-<h1 class="text-3xl font-extrabold mb-6 text-[#D48905]">🏠 Dashboard</h1>
+
+<h1 class="text-3xl font-extrabold mb-6 text-[#D48905] ms-5"> Dashboard</h1>
 <div class="bg-white border border-[#EAB515]/60 rounded-3xl shadow-md hover:shadow-lg transition-all duration-300">
   <div class="bg-gradient-to-r from-[#FEEA6E] via-[#FBD63D] to-[#EAB515] rounded-t-3xl p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:space-x-6 text-center sm:text-left">
     <img id="profileImage" src="https://via.placeholder.com/120" alt="Profile"
@@ -8,9 +9,12 @@
         <span id="username-display">Username</span>
         <span id="userRank" class="text-sm text-[#4b3a00]/70 font-normal">(Rank)</span>
       </h2>
+      <p id="userLevel" class="text-sm text-[#4b3a00]/70 mt-1 font-semibold">
+  Level 1 – Beginner 🐣
+</p>
       <p class="text-sm text-[#4b3a00]/70 mt-1 italic">“Welcome back, keep hopping higher on Steem!”</p>
       <div class="mt-4 w-full bg-[#ffffff90] rounded-full h-3 overflow-hidden">
-        <div id="progressBar" class="bg-[#D48905] h-3 rounded-full transition-all duration-700" style="width:70%;"></div>
+        <div id="progressBar" class="bg-[#D48905] h-3 rounded-full transition-all duration-700" style="width:1%;"></div>
       </div>
       <p class="text-xs text-[#4b3a00]/60 mt-1">Progress to next rank</p>
     </div>
@@ -26,4 +30,5 @@
     </div>
   </div>
 </div>
+
 <script type="module" src="../js/dashboard.js"></script>

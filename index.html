@@ -1,112 +1,185 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Steem Hop</title>
-
     <!-- Tailwind + Fonts + Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="./css/style.css" />
   </head>
-
   <body class="min-h-screen text-gray-800 bg-[#FFFBEA]">
     <!-- LOGIN SCREEN -->
-    <div id="login-screen" class="bg-white shadow-lg rounded-xl p-8 w-full max-w-sm mx-auto text-center border border-[#EAB515] mt-20">
-      <img src="assets/logo.png" alt="Steem Hop Logo" class="w-28 h-28 mx-auto mb-4" />
-      <h3 class="text-2xl font-extrabold text-[#D48905] mb-6">Steem Hop Login</h3>
-      <input id="user" placeholder="Enter your Steem username"
-        class="w-full px-4 py-2 border border-[#EAB515] rounded-md focus:ring-2 focus:ring-[#EAB515] focus:outline-none mb-4" />
-      <button id="sign" class="w-full py-2 rounded-md gold-btn font-semibold transition">Login with Keychain</button>
+    <div
+      id="login-screen"
+      class="bg-white shadow-lg rounded-xl p-8 w-full max-w-sm mx-auto text-center border border-[#EAB515] mt-20"
+    >
+      <img
+        src="assets/STEEMHOP FINAL LOGO.png"
+        alt="Steem Hop Logo"
+        class="w-28 h-28 mx-auto mb-4"
+      />
+      <h3 class="text-2xl font-extrabold text-[#D48905] mb-6">
+        Steem Hop Login
+      </h3>
+      <input
+        id="user"
+        placeholder="Enter your Steem username"
+        class="w-full px-4 py-2 border border-[#EAB515] rounded-md focus:ring-2 focus:ring-[#EAB515] focus:outline-none mb-4"
+      />
+      <button
+        id="sign"
+        class="w-full py-2 rounded-md gold-btn font-semibold transition"
+      >
+        Login with Keychain
+      </button>
       <p id="status" class="mt-4 text-sm text-gray-600"></p>
     </div>
-
     <!-- MAIN APP -->
-    <div id="app-screen" class="hidden flex flex-col sm:flex-row w-full min-h-screen fade-in bg-[#FFFBEA] overflow-hidden relative">
-
+    <div
+      id="app-screen"
+      class="hidden flex flex-col sm:flex-row w-full min-h-screen fade-in bg-[#FFFBEA] overflow-hidden relative"
+    >
       <!-- ✅ Mobile Navbar -->
-      <div class="sm:hidden bg-[#D48905] text-white p-2 flex items-center justify-between relative z-50">
+      <div
+        class="sm:hidden bg-[#D48905] text-white p-2 flex items-center justify-between relative z-50"
+      >
         <h2 class="text-lg font-bold flex items-center gap-2">
-          <img src="assets/logo.png" alt="Steem Hop Logo" class="w-6 h-6 object-contain rounded-full" />
+          <img
+            src="assets/STEEMHOP FINAL LOGO.png"
+            alt="Steem Hop Logo"
+            class="w-6 h-6 object-contain rounded-full"
+          />
           <span>Steem Hop</span>
         </h2>
-
         <!-- ✅ Sidebar Toggle Button -->
         <button id="menu-toggle" class="text-white text-2xl focus:outline-none">
           <i class="fa-solid fa-bars"></i>
         </button>
       </div>
-
       <!-- ✅ Sidebar (now toggleable) -->
-      <aside id="sidebar"
-        class="fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-[#FEEA6E] to-[#EAB515] text-[#4b3a00] transform -translate-x-full sm:translate-x-0 transition-transform duration-300 sm:static sm:flex sm:flex-col shadow-lg z-40">
+      <aside
+        id="sidebar"
+        class="fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-[#FEEA6E] to-[#EAB515] text-[#4b3a00] transform -translate-x-full sm:translate-x-0 transition-transform duration-300 sm:static sm:flex sm:flex-col shadow-lg z-40"
+      >
         <div class="p-5">
-          <h2 class="text-xl font-bold mb-6 flex items-center gap-2 border-b border-[#D48905]/30 pb-2 text-[#D48905]">
-            <img src="assets/logo.png" alt="Steem Hop Logo" class="w-6 h-6 object-contain rounded-full" />
+          <h2
+            class="text-xl font-bold mb-6 flex items-center gap-2 border-b border-[#D48905]/30 pb-2 text-[#D48905]"
+          >
+            <img
+              src="assets/STEEMHOP FINAL LOGO.png"
+              alt="Steem Hop Logo"
+              class="w-6 h-6 object-contain rounded-full"
+            />
             <span>Steem Hop</span>
           </h2>
-
           <!-- Navigation Buttons -->
-          <button data-page="dashboard" class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition">Dashboard</button>
-          <button data-page="game" class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition">Play Game</button>
-          <button data-page="leaderboard" class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition">Leaderboard</button>
-          <button data-page="about" class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition">About Us</button>
-          <button data-page="mission" class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition">Our Mission</button>
-          <button data-page="vision" class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition">Our Vision</button>
-          <button data-page="team" class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition">Our Team</button>
-          <button data-page="upcoming" class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition">Upcoming</button>
-
+          <button
+            data-page="dashboard"
+            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
+          >
+            Dashboard
+          </button>
+          <button
+            data-page="game"
+            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
+          >
+            Play Game
+          </button>
+          <button
+            data-page="leaderboard"
+            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
+          >
+            Leaderboard
+          </button>
+          <button
+            data-page="about"
+            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
+          >
+            About Us
+          </button>
+          <button
+            data-page="mission"
+            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
+          >
+            Our Mission
+          </button>
+          <button
+            data-page="vision"
+            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
+          >
+            Our Vision
+          </button>
+          <button
+            data-page="team"
+            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
+          >
+            Our Team
+          </button>
+          <button
+            data-page="upcoming"
+            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
+          >
+            Upcoming
+          </button>
           <div class="mt-6 border-t border-[#EAB515]/40 pt-4">
-            <button id="logout" class="w-full py-2 rounded-md gold-btn">🚪 Logout</button>
+            <button id="logout" class="w-full py-2 rounded-md gold-btn">
+              Logout
+            </button>
           </div>
         </div>
       </aside>
-
       <!-- ✅ Dark Overlay (for mobile sidebar close) -->
-      <div id="overlay" class="fixed inset-0 bg-black bg-opacity-40 hidden z-30 sm:hidden"></div>
-
+      <div
+        id="overlay"
+        class="fixed inset-0 bg-black bg-opacity-40 hidden z-30 sm:hidden"
+      ></div>
       <!-- Dynamic Page Container -->
-      <main id="page-content" class="flex-1 p-4 sm:p-10 overflow-y-auto fade-in"></main>
+      <main
+        id="page-content"
+        class="flex-1 p-4 sm:p-10 overflow-y-auto fade-in"
+      ></main>
     </div>
-
     <!-- Bottom Nav -->
-    <nav id="bottom-nav"
-      class="sm:hidden fixed bottom-0 left-0 w-full flex justify-around py-2 text-[#4b3a00] text-2xl bg-white border-t border-gray-200 hidden">
-      <button data-page="dashboard" class="active flex flex-col items-center"><i class="fa-solid fa-house"></i></button>
-      <button data-page="game" class="flex flex-col items-center"><i class="fa-solid fa-gamepad"></i></button>
-      <button data-page="leaderboard" class="flex flex-col items-center"><i class="fa-solid fa-trophy"></i></button>
-      <button data-page="about" class="flex flex-col items-center"><i class="fa-solid fa-circle-info"></i></button>
+    <nav
+      id="bottom-nav"
+      class="sm:hidden fixed bottom-0 left-0 w-full flex justify-around py-2 text-[#4b3a00] text-2xl bg-white border-t border-gray-200 hidden"
+    >
+      <button data-page="dashboard" class="active flex flex-col items-center">
+        <i class="fa-solid fa-house"></i>
+      </button>
+      <button data-page="game" class="flex flex-col items-center">
+        <i class="fa-solid fa-gamepad"></i>
+      </button>
+      <button data-page="leaderboard" class="flex flex-col items-center">
+        <i class="fa-solid fa-trophy"></i>
+      </button>
     </nav>
-
     <!-- Loader Screen -->
-    <div id="loader-screen"
-      class="hidden fixed inset-0 flex flex-col justify-center items-center bg-[#FFFBEA] z-50 transition-opacity duration-700">
-      <img src="assets/logo.png" alt="Steem Hop Logo" class="w-24 h-24 mb-4 animate-bounce">
-      <div class="loader-circle border-4 border-t-[#EAB515] border-[#FEEA6E] rounded-full w-12 h-12 animate-spin"></div>
-      <p class="mt-4 text-[#D48905] text-lg font-bold tracking-wide">Loading Steem Hop...</p>
+    <div
+      id="loader-screen"
+      class="hidden fixed inset-0 flex flex-col justify-center items-center bg-[#FFFBEA] z-50 transition-opacity duration-700"
+    >
+      <img
+        src="assets/STEEMHOP FINAL LOGO.png"
+        alt="Steem Hop Logo"
+        class="w-24 h-24 mb-4 animate-bounce"
+      />
+      <div
+        class="loader-circle border-4 border-t-[#EAB515] border-[#FEEA6E] rounded-full w-12 h-12 animate-spin"
+      ></div>
+      <p class="mt-4 text-[#D48905] text-lg font-bold tracking-wide">
+        Loading Steem Hop...
+      </p>
     </div>
-
     <script src="js/main.js"></script>
-
-    <!-- ✅ Sidebar Toggle Script -->
-    <script>
-      const menuToggle = document.getElementById("menu-toggle");
-      const sidebar = document.getElementById("sidebar");
-      const overlay = document.getElementById("overlay");
-
-      if (menuToggle && sidebar && overlay) {
-        menuToggle.addEventListener("click", () => {
-          sidebar.classList.toggle("-translate-x-full");
-          overlay.classList.toggle("hidden");
-        });
-
-        overlay.addEventListener("click", () => {
-          sidebar.classList.add("-translate-x-full");
-          overlay.classList.add("hidden");
-        });
-      }
-    </script>
   </body>
 </html>

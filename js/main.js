@@ -16,7 +16,16 @@ async function loadPage(page, user = null) {
     if (user) module.loadUserProfile(user); // ✅ load profile instantly
   }
   if (page === "game") import("./game.js");
-  if (page === "leaderboard") import("./leaderboard.js");
+if (page === "leaderboard") {
+  // Wait a moment to ensure the new HTML (leaderList) is injected
+  setTimeout(async () => {
+    const module = await import(`./leaderboard.js?update=${Date.now()}`);
+    if (module && typeof module.loadLeaderboard === "function") {
+      await module.loadLeaderboard();
+    }
+  }, 300);
+}
+
 }
 
 // ✅ Show loader
@@ -105,3 +114,19 @@ document.querySelectorAll("[data-page]").forEach(btn => {
     btn.classList.add("active");
   });
 });
+// sidebar toggler
+const menuToggle = document.getElementById("menu-toggle");
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("overlay");
+
+      if (menuToggle && sidebar && overlay) {
+        menuToggle.addEventListener("click", () => {
+          sidebar.classList.toggle("-translate-x-full");
+          overlay.classList.toggle("hidden");
+        });
+
+        overlay.addEventListener("click", () => {
+          sidebar.classList.add("-translate-x-full");
+          overlay.classList.add("hidden");
+        });
+      }
