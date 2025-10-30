@@ -5,7 +5,8 @@ $username = $_POST['username'] ?? '';
 $score = $_POST['score'] ?? 0;
 
 if ($username && $score) {
-  $stmt = $conn->prepare("INSERT INTO leaderboard (username, score) VALUES (?, ?)");
+  // Insert with timestamp
+  $stmt = $conn->prepare("INSERT INTO leaderboard (username, score, created_at) VALUES (?, ?, NOW())");
   $stmt->bind_param("si", $username, $score);
   
   if ($stmt->execute()) {
@@ -13,7 +14,9 @@ if ($username && $score) {
   } else {
     echo "❌ Error saving score.";
   }
+  $stmt->close();
 } else {
   echo "⚠️ Invalid data.";
 }
+$conn->close();
 ?>
