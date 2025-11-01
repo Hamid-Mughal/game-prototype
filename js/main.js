@@ -25,6 +25,28 @@ if (page === "leaderboard") {
     }
   }, 300);
 }
+if (page === "spinwheel") {
+  const module = await import("./spinwheel.js");
+  module.initSpinWheel();
+}
+// ✅ Fix for "Reports" page (file name: report.html)
+if (page === "report") {
+  try {
+    // Wait a bit for HTML to be inserted
+    await new Promise((r) => setTimeout(r, 300));
+
+    const module = await import("./report.js");
+    if (module && typeof module.loadReports === "function") {
+      module.loadReports();
+      console.log("✅ Reports module loaded successfully.");
+    } else {
+      console.error("⚠️ report.js loaded, but loadReports() not found.");
+    }
+  } catch (err) {
+    console.error("❌ Failed to load report.js:", err);
+  }
+}
+
 
 }
 
@@ -48,22 +70,39 @@ document.getElementById("sign").onclick = () => {
 
   status.textContent = "⏳ Logging in...";
   window.steem_keychain.requestSignBuffer(user, "hello_from_steem_hop", "Posting", async (r) => {
-    if (r.success) {
-      localStorage.setItem("steemhop_user", user);
+   if (r.success) {
+  localStorage.setItem("steemhop_user", user);
+  showLoader();
 
-      showLoader();
+  setTimeout(async () => {
+    loginScreen.classList.add("hidden");
+    appScreen.classList.remove("hidden");
+    bottomNav.classList.remove("hidden");
 
-      setTimeout(async () => {
-        loginScreen.classList.add("hidden");
-        appScreen.classList.remove("hidden");
-        bottomNav.classList.remove("hidden");
+    // ✅ Award daily login points
+    try {
+      const form = new URLSearchParams();
+      form.append("username", user);
+      const rewardRes = await fetch("php/login_reward.php", {
+        method: "POST",
+        body: form
+      });
+      const rewardData = await rewardRes.json();
 
-        // ✅ Load dashboard and profile immediately
-        await loadPage("dashboard", user);
+      if (rewardData.success) {
+        alert(rewardData.message);
+      } else {
+        console.log(rewardData.message);
+      }
+    } catch (err) {
+      console.warn("⚠️ Daily reward check failed:", err);
+    }
 
-        hideLoader();
-      }, 1000);
-    } else {
+    await loadPage("dashboard", user);
+    hideLoader();
+  }, 1000);
+}
+ else {
       status.textContent = "❌ Login failed: " + r.message;
     }
   });

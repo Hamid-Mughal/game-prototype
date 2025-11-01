@@ -1,0 +1,41 @@
+<h1 class="text-2xl sm:text-3xl font-bold mb-6 text-[#D48905] flex items-center gap-2">
+  🎡 <span>Spin Wheel</span>
+</h1>
+
+<div
+  class="bg-white p-6 rounded-3xl shadow-md border border-[#EAB515]/70 text-center"
+  style="max-width: 600px; margin: 0 auto;"
+>
+  <p class="text-[#4b3a00] mb-4 font-medium">
+    Try your luck! Spin the wheel and earn random bonus points 🎁
+  </p>
+
+  <div class="relative flex justify-center items-center mb-4">
+    <canvas
+  id="spinWheelCanvas"
+  class="rounded-full border-4 border-[#EAB515] shadow-lg bg-white mx-auto"
+></canvas>
+
+
+    <div
+      class="absolute top-[50%] left-[50%] translate-x-[-50%] -translate-y-[160px] text-[#D48905] text-3xl"
+    >
+      🔻
+    </div>
+  </div>
+
+  <button
+    id="spinButton"
+    class="gold-btn px-6 py-2 rounded-md font-bold text-white text-lg hover:scale-105 transition-transform"
+  >
+    Spin Now!
+  </button>
+  <p id="spinTimer" class="text-[#D48905] mt-3 font-semibold"></p>
+
+
+  <p id="spinResult" class="mt-4 text-[#4b3a00] font-semibold"></p>
+</div>
+<script type="module">
+  import { initSpinWheel } from '../js/spinwheel.js';
+  initSpinWheel();
+</script>

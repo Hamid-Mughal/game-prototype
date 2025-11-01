@@ -1,6 +1,7 @@
+// js/dashboard.js (replace old file)
 export async function loadUserProfile(username) {
   try {
-    // Wait until dashboard DOM is ready
+    // Wait for DOM...
     await new Promise((resolve) => {
       const check = setInterval(() => {
         if (
@@ -18,10 +19,10 @@ export async function loadUserProfile(username) {
       }, 100);
     });
 
-    // Show username instantly
+    // Show username quickly
     document.getElementById("username-display").textContent = username;
 
-    // Fetch profile image from Steem
+    // fetch avatar only
     const res = await fetch("https://api.steemit.com", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -32,69 +33,57 @@ export async function loadUserProfile(username) {
         id: 1,
       }),
     });
-
     const json = await res.json();
     const user = json.result?.[0];
     const metadata = JSON.parse(user?.posting_json_metadata || "{}");
-    const profileImg =
+    document.getElementById("profileImage").src =
       metadata.profile?.profile_image || "https://via.placeholder.com/100";
-    document.getElementById("profileImage").src = profileImg;
 
-    // Fetch user stats from DB
-    const statsRes = await fetch(`php/get_user_stats.php?username=${username}`);
+    // fetch DB stats (total, highest, next_allowed)
+    const statsRes = await fetch(`php/get_user_stats.php?username=${encodeURIComponent(username)}`);
     const stats = await statsRes.json();
 
     const totalPoints = stats.total_points || 0;
     const highestScore = stats.highest_score || 0;
 
-    // Update score UI
     document.getElementById("userPoints").textContent = totalPoints;
     document.getElementById("userReputation").textContent = highestScore;
 
-    // Rank logic
-    const rank =
-      highestScore >= 1000
-        ? "Legend 🏆"
-        : highestScore >= 500
-        ? "Pro ⭐"
-        : highestScore >= 250
-        ? "Challenger 💪"
-        : highestScore >= 100
-        ? "Explorer 🌿"
-        : "Beginner 🐣";
+    // Rank & Level logic
+    
 
-    document.getElementById("userRank").textContent = `(${rank})`;
-
-    // ✅ New Level System (based on total points)
     let level = 1;
     if (totalPoints >= 1000) level = 5;
     else if (totalPoints >= 500) level = 4;
     else if (totalPoints >= 250) level = 3;
     else if (totalPoints >= 100) level = 2;
-
-    const levelLabel = [
-      "Beginner 🐣",
-      "Explorer 🌿",
-      "Challenger 💪",
-      "Pro ⭐",
-      "Legend 🏆",
-    ][level - 1];
-
+    const levelLabel = ["Beginner 🐣","Explorer 🌿","Challenger 💪","Pro ⭐","Legend 🏆"][level-1];
     document.getElementById("userLevel").textContent = `Level ${level} – ${levelLabel}`;
      document.getElementById("userRank").textContent = `(${levelLabel})`;
+    
 
-    // Animate progress bar based on total points
     const progress = Math.min((totalPoints / 1000) * 100, 100);
     const bar = document.getElementById("progressBar");
     bar.style.transition = "width 1.2s ease-in-out";
     bar.style.width = `${progress}%`;
 
-    console.log(`✅ Dashboard loaded for ${username}: Level ${level}, Points=${totalPoints}, High=${highestScore}`);
+    // If the dashboard should show spin timer, forward next_allowed to an element
+    if (stats.next_allowed) {
+      const timerEl = document.getElementById('spinTimer');
+      if (timerEl) {
+        // dispatch a custom event that spinwheel listens to if needed
+        window.dispatchEvent(new CustomEvent('spinNextAllowedUpdated', { detail: { next_allowed: stats.next_allowed } }));
+      }
+    }
+
   } catch (err) {
-    console.error("⚠️ Dashboard load error:", err);
-    alert("⚠️ Unable to load dashboard data.");
+    console.error("Dashboard load error:", err);
+    // No alert so UX not interrupted
   }
 }
 
 const user = localStorage.getItem("steemhop_user");
 if (user) loadUserProfile(user);
+
+
+
