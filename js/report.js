@@ -1,3 +1,4 @@
+// js/report.js
 export async function loadReports() {
   const user = localStorage.getItem("steemhop_user");
   const tableBody = document.getElementById("pointsLogTable");
@@ -35,31 +36,36 @@ export async function loadReports() {
       return;
     }
 
-    // ✅ Display rows
-    tableBody.innerHTML = data
-      .map((row) => {
-        let color = "#D48905";
-        let icon = "🟡";
+    // Build rows with staggered animation
+    tableBody.innerHTML = ""; // clear
+    data.forEach((row, index) => {
+      let color = "#D48905";
+      let icon = "🟡";
 
-        if (row.source === "game") {
-          color = "#3B82F6";
-          icon = "🎮";
-        } else if (row.source === "spin") {
-          color = "#22C55E";
-          icon = "🎯";
-        } else if (row.source === "login") {
-          color = "#EAB308";
-          icon = "✨";
-        }
+      if (row.source === "game") {
+        color = "#3B82F6";
+        icon = "🎮";
+      } else if (row.source === "spin") {
+        color = "#22C55E";
+        icon = "🎯";
+      } else if (row.source === "login") {
+        color = "#EAB308";
+        icon = "✨";
+      }
 
-        return `
-          <tr class="text-center border-t hover:bg-[#FFFBEA]/60 transition-all">
-            <td class="py-2 px-4">${row.created_at}</td>
-            <td class="py-2 px-4 font-semibold text-[#4b3a00]">${icon} ${row.source}</td>
-            <td class="py-2 px-4 font-bold" style="color:${color}">+${row.points}</td>
-          </tr>`;
-      })
-      .join("");
+      const tr = document.createElement("tr");
+      tr.className = "text-center border-t hover:bg-[#FFFBEA]/60 transition-all report-row";
+      // stagger
+      tr.style.animationDelay = `${(index * 60)}ms`;
+
+      tr.innerHTML = `
+        <td class="py-2 px-4">${row.created_at}</td>
+        <td class="py-2 px-4 font-semibold text-[#4b3a00]">${icon} ${row.source}</td>
+        <td class="py-2 px-4 font-bold" style="color:${color}">+${row.points}</td>
+      `;
+
+      tableBody.appendChild(tr);
+    });
   } catch (err) {
     console.error("❌ Error loading report:", err);
     tableBody.innerHTML = `
@@ -71,6 +77,6 @@ export async function loadReports() {
   }
 }
 
-// Auto-load
+// Auto-load and re-load on updates
 loadReports();
 window.addEventListener("pointsUpdated", loadReports);

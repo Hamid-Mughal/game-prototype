@@ -1,56 +1,75 @@
 <?php
 include 'db.php';
+header('Content-Type: application/json');
 
 $username = $_POST['username'] ?? '';
 
 if (!$username) {
-  echo json_encode(["success" => false, "message" => "No username provided"]);
+  echo json_encode(["success" => false, "message" => "❌ No username provided"]);
   exit;
 }
 
-// ✅ Check last login reward
-$stmt = $conn->prepare("SELECT last_login_reward FROM leaderboard WHERE username = ? ORDER BY id DESC LIMIT 1");
+// ✅ Check last login reward from points_log
+$stmt = $conn->prepare("
+  SELECT created_at 
+  FROM points_log 
+  WHERE username = ? AND source = 'login'
+  ORDER BY id DESC LIMIT 1
+");
 $stmt->bind_param("s", $username);
 $stmt->execute();
 $result = $stmt->get_result()->fetch_assoc();
+$stmt->close();
 
-$now = new DateTime();
+$now = time();
 $rewardAllowed = false;
 
-if ($result && $result['last_login_reward']) {
-  $lastReward = new DateTime($result['last_login_reward']);
-  $diff = $now->getTimestamp() - $lastReward->getTimestamp();
+if ($result && isset($result['created_at'])) {
+  $lastLogin = strtotime($result['created_at']);
+  $diff = $now - $lastLogin;
 
-  if ($diff >= 86400) { // 24 hours
+  // ✅ Allow only after 24 hours
+  if ($diff >= 86400) {
     $rewardAllowed = true;
   }
 } else {
-  // No record found → first login ever
+  // First login ever
   $rewardAllowed = true;
 }
 
 if ($rewardAllowed) {
   $points = 10;
 
-  // ✅ Save in leaderboard
-  $stmt2 = $conn->prepare("INSERT INTO leaderboard (username, score, created_at, last_login_reward) VALUES (?, ?, NOW(), NOW())");
+  // ✅ 1. Add to leaderboard
+  $stmt2 = $conn->prepare("INSERT INTO leaderboard (username, score, created_at) VALUES (?, ?, NOW())");
   $stmt2->bind_param("si", $username, $points);
   $stmt2->execute();
+  $stmt2->close();
 
-  // ✅ Add to points log
-  $log = $conn->prepare("INSERT INTO points_log (username, source, points) VALUES (?, 'login', ?)");
+  // ✅ 2. Add to transaction log
+  $log = $conn->prepare("INSERT INTO points_log (username, source, points, created_at) VALUES (?, 'login', ?, NOW())");
   $log->bind_param("si", $username, $points);
   $log->execute();
+  $log->close();
+
+  // ✅ 3. Fetch total points
+  $sumStmt = $conn->prepare("SELECT COALESCE(SUM(score), 0) AS total_points FROM leaderboard WHERE username = ?");
+  $sumStmt->bind_param("s", $username);
+  $sumStmt->execute();
+  $sumResult = $sumStmt->get_result()->fetch_assoc();
+  $totalPoints = $sumResult['total_points'] ?? 0;
+  $sumStmt->close();
 
   echo json_encode([
     "success" => true,
     "points_awarded" => $points,
+    "total_points" => $totalPoints,
     "message" => "🎉 You received 10 daily login points!"
   ]);
 } else {
   echo json_encode([
     "success" => false,
-    "message" => "You already received login reward in last 24 hours."
+    "message" => "⏳ You already received login reward."
   ]);
 }
 

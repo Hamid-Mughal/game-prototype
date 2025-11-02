@@ -33,7 +33,14 @@ export async function loadUserProfile(username) {
         id: 1,
       }),
     });
-    const json = await res.json();
+    // handle non-JSON or network errors gracefully
+    let json = {};
+    try {
+      json = await res.json();
+    } catch (e) {
+      console.warn("Could not parse Steem API response", e);
+      json = {};
+    }
     const user = json.result?.[0];
     const metadata = JSON.parse(user?.posting_json_metadata || "{}");
     document.getElementById("profileImage").src =
@@ -46,12 +53,29 @@ export async function loadUserProfile(username) {
     const totalPoints = stats.total_points || 0;
     const highestScore = stats.highest_score || 0;
 
-    document.getElementById("userPoints").textContent = totalPoints;
-    document.getElementById("userReputation").textContent = highestScore;
+    const pointsEl = document.getElementById("userPoints");
+    const repEl = document.getElementById("userReputation");
+
+    // Update values
+    // add animation class briefly when value changes
+    if (pointsEl) {
+      const previous = Number(pointsEl.textContent || 0);
+      pointsEl.textContent = totalPoints;
+      if (previous !== totalPoints) {
+        pointsEl.classList.add("points-animate");
+        setTimeout(() => pointsEl.classList.remove("points-animate"), 800);
+      }
+    }
+    if (repEl) {
+      const previousH = Number(repEl.textContent || 0);
+      repEl.textContent = highestScore;
+      if (previousH !== highestScore) {
+        repEl.classList.add("points-animate");
+        setTimeout(() => repEl.classList.remove("points-animate"), 800);
+      }
+    }
 
     // Rank & Level logic
-    
-
     let level = 1;
     if (totalPoints >= 1000) level = 5;
     else if (totalPoints >= 500) level = 4;
@@ -59,21 +83,23 @@ export async function loadUserProfile(username) {
     else if (totalPoints >= 100) level = 2;
     const levelLabel = ["Beginner 🐣","Explorer 🌿","Challenger 💪","Pro ⭐","Legend 🏆"][level-1];
     document.getElementById("userLevel").textContent = `Level ${level} – ${levelLabel}`;
-     document.getElementById("userRank").textContent = `(${levelLabel})`;
-    
+    document.getElementById("userRank").textContent = `(${levelLabel})`;
 
+    // Animate progress bar and add glow
     const progress = Math.min((totalPoints / 1000) * 100, 100);
     const bar = document.getElementById("progressBar");
-    bar.style.transition = "width 1.2s ease-in-out";
-    bar.style.width = `${progress}%`;
+    if (bar) {
+      bar.style.transition = "width 1.2s ease-in-out";
+      bar.style.width = `${progress}%`;
+      // add glow, but keep it gentle
+      bar.classList.add("glow-bar");
+      // remove glow after a while to avoid permanent busy animation (optional)
+      setTimeout(() => bar.classList.remove("glow-bar"), 3000);
+    }
 
-    // If the dashboard should show spin timer, forward next_allowed to an element
+    // If the dashboard should show spin timer, forward next_allowed to an element (spinwheel listens)
     if (stats.next_allowed) {
-      const timerEl = document.getElementById('spinTimer');
-      if (timerEl) {
-        // dispatch a custom event that spinwheel listens to if needed
-        window.dispatchEvent(new CustomEvent('spinNextAllowedUpdated', { detail: { next_allowed: stats.next_allowed } }));
-      }
+      window.dispatchEvent(new CustomEvent('spinNextAllowedUpdated', { detail: { next_allowed: stats.next_allowed } }));
     }
 
   } catch (err) {
@@ -84,6 +110,3 @@ export async function loadUserProfile(username) {
 
 const user = localStorage.getItem("steemhop_user");
 if (user) loadUserProfile(user);
-
-
-

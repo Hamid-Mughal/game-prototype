@@ -1,5 +1,5 @@
+// js/spinwheel.js
 export async function initSpinWheel() {
-  // Wait for HTML to fully load
   await new Promise((r) => setTimeout(r, 200));
 
   const canvas = document.getElementById("spinWheelCanvas");
@@ -15,24 +15,21 @@ export async function initSpinWheel() {
 
   console.log("✅ Spin wheel initialized properly.");
 
-  // ✅ Prize slices
   const prizes = ["Try Again", "0 Points", "5 Points", "10 Points", "15 Points"];
   const colors = ["#FFD700", "#FFB700", "#EAB515", "#F9C80E", "#FF8C00"];
 
   let isSpinning = false;
   let angle = 0;
 
-  // Responsive setup
   function resizeCanvas() {
     const parentWidth = canvas.parentElement.offsetWidth;
-    const size = Math.min(parentWidth * 0.8, 300);
+    const size = Math.min(parentWidth * 0.8, 320);
     canvas.width = size;
     canvas.height = size;
     drawWheel();
   }
   window.addEventListener("resize", resizeCanvas);
 
-  // 🎨 Draw wheel
   function drawWheel(rotation = 0) {
     const sliceAngle = (2 * Math.PI) / prizes.length;
     const radius = canvas.width / 2.3;
@@ -62,7 +59,6 @@ export async function initSpinWheel() {
       ctx.restore();
     });
 
-    // ✅ Center hub
     ctx.beginPath();
     ctx.arc(0, 0, canvas.width / 8, 0, 2 * Math.PI);
     ctx.fillStyle = "#FFFBEA";
@@ -73,7 +69,6 @@ export async function initSpinWheel() {
     ctx.restore();
   }
 
-  // 🌀 Spin animation
   function spinWheel() {
     if (isSpinning) return;
     isSpinning = true;
@@ -105,7 +100,6 @@ export async function initSpinWheel() {
     animate();
   }
 
-  // 🎯 Determine result and send to backend
   async function showResult() {
     const slice = 360 / prizes.length;
     let adjustedAngle = (angle + 90) % 360;
@@ -116,9 +110,8 @@ export async function initSpinWheel() {
     result.textContent = `🎉 You got: ${prize}!`;
 
     const username = localStorage.getItem("steemhop_user");
-    if (!username) return alert("⚠️ Please login first.");
+    if (!username) return showPopup("⚠️ Please login first.", "warning");
 
-    // Map text to numeric value
     let score = 0;
     if (prize.includes("Points")) score = parseInt(prize);
     else score = 0;
@@ -126,35 +119,66 @@ export async function initSpinWheel() {
     await saveSpinResult(username, score);
   }
 
-  // 💾 Save result to backend
   async function saveSpinResult(username, score) {
     try {
       const res = await fetch("php/save_spin.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `username=${encodeURIComponent(username)}&score=${encodeURIComponent(score)}`
+        body: `username=${encodeURIComponent(username)}&score=${encodeURIComponent(score)}`,
       });
 
       const data = await res.json();
       console.log("✅ Spin result response:", data);
 
       if (!data.success) {
-        alert(data.message || "❌ Spin save failed.");
+        showPopup(data.message || "❌ Spin save failed.", "error");
         return;
       }
 
-      // ✅ Success: show summary
-      alert(`🎯 Spin saved!\nPoints: +${score}\nTotal: ${data.total_points}`);
+      const message =
+        score > 0
+          ? `🎯 You won <strong>+${score}</strong> points!<br>Total: ${data.total_points}`
+          : `😅 Try again next time!`;
 
-      // ✅ Update dashboard + report in real-time
+      showPopup(message, score > 0 ? "success" : "warning", score);
+
       window.dispatchEvent(new CustomEvent("pointsUpdated"));
       window.dispatchEvent(new CustomEvent("leaderboardUpdated"));
     } catch (err) {
       console.error("❌ Error saving spin:", err);
+      showPopup("⚠️ Network error. Try again later.", "error");
     }
   }
 
   drawWheel();
   resizeCanvas();
   spinButton.addEventListener("click", spinWheel);
+}
+
+/* === Animated Reward Popup === */
+function showPopup(message, type = "success", points = 0) {
+  const popup = document.createElement("div");
+  popup.className = `reward-popup ${type}`;
+  popup.innerHTML = `
+    <div class="reward-popup-content">
+      ${points >= 10 ? "<h3>💥 Big Win!</h3>" : ""}
+      <p>${message}</p>
+      <button class="popup-btn">OK</button>
+      <div class="confetti"></div>
+    </div>
+  `;
+
+  document.body.appendChild(popup);
+  setTimeout(() => popup.classList.add("show"), 50);
+
+  const btn = popup.querySelector(".popup-btn");
+  btn.addEventListener("click", () => closePopup(popup));
+
+  // Auto close after 4s
+  setTimeout(() => closePopup(popup), 4000);
+}
+
+function closePopup(popup) {
+  popup.classList.remove("show");
+  setTimeout(() => popup.remove(), 600);
 }

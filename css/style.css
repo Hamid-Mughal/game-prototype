@@ -66,7 +66,7 @@ canvas {
 
 /* --- Progress Bar Animation --- */
 #progressBar {
-  transform-origin: left center; /* Fill left to right */
+  transform-origin: left center; 
   transform: scaleX(0);
   animation: fillBar 1.2s ease-in-out forwards;
 }
@@ -74,4 +74,286 @@ canvas {
 @keyframes fillBar {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
+}
+
+/* === Animations & Effects === */
+
+/* Dashboard number pulse */
+@keyframes pulseGold {
+  0%, 100% { transform: scale(1); color: #D48905; }
+  50% { transform: scale(1.08); color: #EAB515; }
+}
+.points-animate {
+  animation: pulseGold 0.8s ease-in-out;
+  display: inline-block;
+}
+
+/* Progress bar glow */
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 4px #EAB515; }
+  50% { box-shadow: 0 0 18px #FFD84B; }
+}
+.glow-bar {
+  animation: glow 2s infinite ease-in-out;
+}
+
+/* Floating +points animation */
+@keyframes floatUp {
+  0% { opacity: 0; transform: translateY(8px) scale(0.95); }
+  25% { opacity: 1; transform: translateY(-6px) scale(1); }
+  100% { opacity: 0; transform: translateY(-40px) scale(1.15); }
+}
+.float-points {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #D48905;
+  pointer-events: none;
+  animation: floatUp 1.2s ease-out forwards;
+  text-shadow: 0 1px 0 #fff7e6;
+  z-index: 9999;
+}
+
+/* Small sparkle effect (optional decoration) */
+.sparkle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFD84B 0%, rgba(234,181,21,0) 60%);
+  filter: blur(2px);
+  opacity: 0.95;
+  pointer-events: none;
+  animation: floatUp 1.2s ease-out forwards;
+}
+
+/* Report table rows fade + slide */
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.report-row {
+  opacity: 0;
+  animation: fadeSlide 0.42s ease-in-out forwards;
+}
+
+/* Slight hover nudges on sidebar buttons (already tailwind, but nicer) */
+.tab-btn {
+  transition: transform 200ms ease;
+}
+.tab-btn:hover {
+  transform: translateX(4px);
+}
+
+
+/* === Game Over Popup === */
+.game-popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.game-popup.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.game-popup-content {
+  background: #fffdf0;
+  border: 3px solid #EAB515;
+  border-radius: 16px;
+  box-shadow: 0 0 25px rgba(234, 181, 21, 0.6);
+  text-align: center;
+  padding: 25px;
+  width: 85%;
+  max-width: 320px;
+  transform: scale(0.9);
+  animation: fadeUp 0.35s ease forwards;
+}
+
+.popup-header {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #D48905;
+  margin-bottom: 10px;
+}
+
+.popup-message {
+  color: #4b3a00;
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.retry-btn,
+.back-btn {
+  background: #EAB515;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 0.95rem;
+}
+
+.retry-btn:hover,
+.back-btn:hover {
+  background: #D48905;
+  transform: scale(1.05);
+}
+
+/* Mobile-friendly animation */
+@keyframes fadeUp {
+  0% {
+    transform: translateY(40px) scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+/* 🌟 Universal Reward Popup + Confetti + Animations */
+.reward-popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.reward-popup.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.reward-popup-content {
+  position: relative;
+  background: linear-gradient(135deg, #fff8d4, #ffe58a);
+  border: 2px solid #eab308;
+  border-radius: 20px;
+  padding: 25px;
+  text-align: center;
+  width: 90%;
+  max-width: 360px;
+  color: #4b3a00;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  animation: popupIn 0.3s ease forwards;
+  overflow: hidden;
+  transform: scale(0.9);
+}
+
+.reward-popup-content canvas {
+  position: absolute;
+  top: 0; 
+  left: 0;
+  width: 100%; 
+  height: 100%;
+  pointer-events: none;
+}
+
+.reward-popup h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #d48905;
+  position: relative;
+}
+
+.reward-popup p {
+  font-size: 1rem;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.reward-popup button {
+  background: #eab308;
+  border: none;
+  color: white;
+  font-weight: bold;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  position: relative;
+}
+
+.reward-popup button:hover {
+  background: #d48905;
+  transform: scale(1.05);
+}
+
+/* ✅ Confetti Particle Animation (canvas layer) */
+@keyframes popupIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ✨ Optional Floating Emoji Confetti (fallback) */
+.confetti::before,
+.confetti::after {
+  content: "✨";
+  position: absolute;
+  font-size: 1.5rem;
+  animation: confettiFall 2s ease-in-out infinite;
+}
+
+.confetti::before {
+  left: 20%;
+  top: 0;
+  animation-delay: 0.2s;
+}
+
+.confetti::after {
+  right: 20%;
+  top: 0;
+  animation-delay: 0.5s;
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(-10px) rotate(0deg); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translateY(60px) rotate(360deg); opacity: 0; }
+}
+
+/* ✅ Status variants */
+.reward-popup.success .reward-popup-content {
+  border-color: #D48905;
+  box-shadow: 0 0 25px rgba(250, 204, 21, 0.4);
+}
+
+.reward-popup.error .reward-popup-content {
+  border-color: #D48905;
+  box-shadow: 0 0 25px rgba(250, 204, 21, 0.4);
+}
+
+.reward-popup.warning .reward-popup-content {
+  border-color: #D48905;
+  box-shadow: 0 0 25px rgba(250, 204, 21, 0.4);
 }
