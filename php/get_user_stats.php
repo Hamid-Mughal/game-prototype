@@ -1,6 +1,7 @@
 <?php
+// php/get_user_stats.php — unified user stats (game + spin + login totals)
 include 'db.php';
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
 $username = $_GET['username'] ?? '';
 
@@ -10,20 +11,31 @@ if (empty($username)) {
 }
 
 try {
-  // ✅ Fetch user total and highest score
-  $stmt = $conn->prepare("
-    SELECT 
-      COALESCE(SUM(score), 0) AS total_points,
-      COALESCE(MAX(score), 0) AS highest_score
-    FROM leaderboard
+  // ✅ 1. Total points (sum of all sources)
+  $totalStmt = $conn->prepare("
+    SELECT COALESCE(SUM(points), 0) AS total_points 
+    FROM points_log 
     WHERE username = ?
   ");
-  $stmt->bind_param("s", $username);
-  $stmt->execute();
-  $result = $stmt->get_result()->fetch_assoc();
-  $stmt->close();
+  $totalStmt->bind_param("s", $username);
+  $totalStmt->execute();
+  $totalRes = $totalStmt->get_result()->fetch_assoc();
+  $totalPoints = $totalRes['total_points'] ?? 0;
+  $totalStmt->close();
 
-  // ✅ Get last spin info for optional cooldown display
+  // ✅ 2. Highest game score (from leaderboard only)
+  $highStmt = $conn->prepare("
+    SELECT COALESCE(MAX(score), 0) AS highest_score 
+    FROM leaderboard 
+    WHERE username = ?
+  ");
+  $highStmt->bind_param("s", $username);
+  $highStmt->execute();
+  $highRes = $highStmt->get_result()->fetch_assoc();
+  $highestScore = $highRes['highest_score'] ?? 0;
+  $highStmt->close();
+
+  // ✅ 3. Spin cooldown (24 h)
   $spinStmt = $conn->prepare("
     SELECT created_at 
     FROM points_log 
@@ -37,17 +49,19 @@ try {
 
   $nextAllowed = null;
   if (!empty($spinRes['created_at'])) {
-    $nextAllowed = strtotime($spinRes['created_at']) + 7 * 24 * 3600;
+    $nextAllowed = strtotime($spinRes['created_at']) + 24 * 3600;
   }
 
+  // ✅ Return unified stats
   echo json_encode([
-    "username" => $username,
-    "total_points" => (int) $result['total_points'],
-    "highest_score" => (int) $result['highest_score'],
-    "next_allowed" => $nextAllowed
-  ]);
+    "username"      => $username,
+    "total_points"  => (int)$totalPoints,
+    "highest_score" => (int)$highestScore,
+    "next_allowed"  => $nextAllowed
+  ], JSON_UNESCAPED_UNICODE);
 
 } catch (Exception $e) {
+  error_log("get_user_stats error: " . $e->getMessage());
   echo json_encode(["error" => "DB Error: " . $e->getMessage()]);
 }
 

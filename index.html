@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -20,7 +21,7 @@
      <!-- app icon -->
      <link rel="icon" type="image/png" href="./assets/logo.png">
   </head>
-  <body class="min-h-screen text-gray-800 bg-[#FFFBEA]">
+  <body class="min-h-screen  text-gray-800 bg-[#FFFBEA]">
     <!-- LOGIN SCREEN -->
     <div
       id="login-screen"
@@ -32,7 +33,7 @@
         class="w-28 h-28 mx-auto mb-4 rounded-full"
       />
       <h3 class="text-2xl font-extrabold text-[#D48905] mb-6">
-        Steem Hop Login
+        Steem Hop
       </h3>
       <input
         id="user"
@@ -56,7 +57,7 @@
       <div
         class="sm:hidden bg-[#D48905] text-white p-2 flex items-center justify-between relative z-50"
       >
-        <h2 class="text-lg font-bold flex items-center gap-2">
+        <h2 class="text-lg  flex items-center gap-2">
           <img
             src="./assets/logo.png"
             alt="Steem Hop Logo"
@@ -70,89 +71,84 @@
         </button>
       </div>
       <!-- ✅ Sidebar (now toggleable) -->
-      <aside
-        id="sidebar"
-        class="fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-[#FEEA6E] to-[#EAB515] text-[#4b3a00] transform -translate-x-full sm:translate-x-0 transition-transform duration-300 sm:static sm:flex sm:flex-col shadow-lg z-40"
-      >
-        <div class="p-5">
-          <h2
-            class="text-xl font-bold mb-6 flex items-center gap-2 border-b border-[#D48905]/30 pb-2 text-[#D48905]"
-          >
-            <img
-              src="./assets/logo.png"
-              alt="Steem Hop Logo"
-              class="w-6 h-6 object-contain rounded-full"
-            />
-            <span>Steem Hop</span>
-          </h2>
-          <!-- Navigation Buttons -->
-          <button
-            data-page="dashboard"
-            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
-          >
-            Dashboard
-          </button>
-          <button
-            data-page="game"
-            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
-          >
-            Play Game
-          </button>
-          <button
-            data-page="leaderboard"
-            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
-          >
-            Leaderboard
-          </button>
-          <button
-            data-page="about"
-            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
-          >
-            About Us
-          </button>
-          <button
-            data-page="mission"
-            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
-          >
-            Our Mission
-          </button>
-          <button
-            data-page="vision"
-            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
-          >
-            Our Vision
-          </button>
-          <button
-            data-page="team"
-            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
-          >
-            Our Team
-          </button>
-          <button
-            data-page="upcoming"
-            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
-          >
-            Upcoming
-          </button>
-          <button
-            data-page="spinwheel"
-            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
-          >
-            Spin Wheel
-          </button>
-           <button
-            data-page="report"
-            class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
-          >
-            Reports
-          </button>
-          <div class="mt-6 border-t border-[#EAB515]/40 pt-4">
-            <button id="logout" class="w-full py-2 rounded-md gold-btn">
-              Logout
-            </button>
-          </div>
-        </div>
-      </aside>
+  
+<aside
+  id="sidebar"
+  class="fixed top-0 left-0 h-screen w-64 bg-gradient-to-b from-[#FEEA6E] to-[#EAB515] 
+         text-[#4b3a00] shadow-lg z-40 flex flex-col justify-between sm:translate-x-0 
+         transform -translate-x-full sm:static sm:flex transition-transform duration-300"
+>
+  <div class="p-5 flex-1 overflow-y-auto">
+    <h2
+      class="text-xl  mb-6 flex items-center gap-2 border-b border-[#D48905]/30 pb-2 text-[#D48905]"
+    >
+      <img
+        src="./assets/logo.png"
+        alt="Steem Hop Logo"
+        class="w-6 h-6 object-contain rounded-full"
+      />
+      <span>Steem Hop</span>
+    </h2>
+
+    <!-- Navigation Buttons -->
+    <button
+      data-page="dashboard"
+      class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
+    >
+      Dashboard
+    </button>
+    <button
+      data-page="game"
+      class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
+    >
+      Play Game
+    </button>
+    <button
+      data-page="leaderboard"
+      class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
+    >
+      Leaderboard
+    </button>
+    <button
+      data-page="about"
+      class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
+    >
+      About Us
+    </button>
+    <button
+      data-page="team"
+      class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
+    >
+      Our Team
+    </button>
+    <button
+      data-page="upcoming"
+      class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
+    >
+      Upcoming
+    </button>
+    <button
+      data-page="spinwheel"
+      class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
+    >
+      Spin Wheel
+    </button>
+    <button
+      data-page="report"
+      class="tab-btn w-full py-2 rounded-md bg-[#EAB515] text-white mb-2 hover:bg-[#D48905] transition"
+    >
+      Reports
+    </button>
+  </div>
+
+  <!-- ✅ Logout Button at Bottom -->
+  <div class="p-5 border-t border-[#EAB515]/40 bg-[#FEEA6E]/30">
+    <button id="logout" class="w-full py-2 rounded-md gold-btn">
+      Logout
+    </button>
+  </div>
+</aside>
+
       <!--  Dark Overlay (for mobile sidebar close) -->
       <div
         id="overlay"
@@ -161,8 +157,9 @@
       <!-- Dynamic Page Container -->
       <main
         id="page-content"
-        class="flex-1 p-4 sm:p-10 overflow-y-auto fade-in"
+        class="flex-1 p-4 sm:p-10 overflow-y-auto fade-in h-screen"
       ></main>
+ 
     </div>
     <!-- Bottom Nav -->
     <nav
@@ -192,10 +189,11 @@
       <div
         class="loader-circle border-4 border-t-[#EAB515] border-[#FEEA6E] rounded-full w-12 h-12 animate-spin"
       ></div>
-      <p class="mt-4 text-[#D48905] text-lg font-bold tracking-wide">
+      <p class="mt-4 text-[#D48905] text-lg  tracking-wide">
         Loading Steem Hop...
       </p>
     </div>
-    <script src="js/main.js"></script>
-  </body>
-</html>
+    <script src="./js/main.js"></script>
+  </body> 
+</html> 
+

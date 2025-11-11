@@ -1,10 +1,25 @@
-// js/report.js
+// ✅ js/report.js — Final Multi-User Safe Version
 export async function loadReports() {
-  const user = localStorage.getItem("steemhop_user");
+  // 🕓 Wait until table is available in DOM
+  await new Promise((resolve) => {
+    const check = setInterval(() => {
+      if (document.getElementById("pointsLogTable")) {
+        clearInterval(check);
+        resolve();
+      }
+    }, 100);
+  });
+
+  // 🧠 Restore user session from localStorage if needed
+  if (!sessionStorage.getItem("steemhop_user") && localStorage.getItem("steemhop_user")) {
+    sessionStorage.setItem("steemhop_user", localStorage.getItem("steemhop_user"));
+  }
+
+  const user = sessionStorage.getItem("steemhop_user");
   const tableBody = document.getElementById("pointsLogTable");
 
   if (!tableBody) {
-    console.error("❌ Table body element (#pointsLogTable) not found.");
+    console.error("❌ Table body element (#pointsLogTable) not found even after wait.");
     return;
   }
 
@@ -26,6 +41,7 @@ export async function loadReports() {
     const data = await res.json();
     console.log("✅ Points log response:", data);
 
+    // ⚙️ Handle empty log
     if (!Array.isArray(data) || data.length === 0) {
       tableBody.innerHTML = `
         <tr>
@@ -36,8 +52,10 @@ export async function loadReports() {
       return;
     }
 
-    // Build rows with staggered animation
-    tableBody.innerHTML = ""; // clear
+    // 🧹 Clear table before populating
+    tableBody.innerHTML = "";
+
+    // 🧾 Render transaction rows
     data.forEach((row, index) => {
       let color = "#D48905";
       let icon = "🟡";
@@ -55,13 +73,12 @@ export async function loadReports() {
 
       const tr = document.createElement("tr");
       tr.className = "text-center border-t hover:bg-[#FFFBEA]/60 transition-all report-row";
-      // stagger
-      tr.style.animationDelay = `${(index * 60)}ms`;
+      tr.style.animationDelay = `${index * 60}ms`;
 
       tr.innerHTML = `
         <td class="py-2 px-4">${row.created_at}</td>
         <td class="py-2 px-4 font-semibold text-[#4b3a00]">${icon} ${row.source}</td>
-        <td class="py-2 px-4 font-bold" style="color:${color}">+${row.points}</td>
+        <td class="py-2 px-4 " style="color:${color}">+${row.points}</td>
       `;
 
       tableBody.appendChild(tr);
@@ -77,6 +94,14 @@ export async function loadReports() {
   }
 }
 
-// Auto-load and re-load on updates
-loadReports();
+// ✅ Load reports automatically after short delay (DOM ready)
+setTimeout(loadReports, 400);
+
+// ✅ Refresh reports when user or points update
 window.addEventListener("pointsUpdated", loadReports);
+window.addEventListener("userSessionChanged", loadReports);
+
+// ✅ Optional: reload when tab becomes active again (helps multi-user dashboards)
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") loadReports();
+});

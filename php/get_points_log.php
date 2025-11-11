@@ -1,11 +1,15 @@
 <?php
+// php/get_points_log.php
 include 'db.php';
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
-$username = $_GET['username'] ?? '';
+// Ensure username param present
+$username = isset($_GET['username']) ? trim($_GET['username']) : '';
 
-if (empty($username)) {
-  echo json_encode(["error" => "Username missing"]);
+if ($username === '') {
+  // Return empty array instead of an error object so frontend can handle uniformly
+  echo json_encode([], JSON_UNESCAPED_UNICODE);
+  $conn->close();
   exit;
 }
 
@@ -25,13 +29,17 @@ try {
 
   $logs = [];
   while ($row = $result->fetch_assoc()) {
+    // Ensure points are integers
+    $row['points'] = (int)$row['points'];
     $logs[] = $row;
   }
 
-  echo json_encode($logs);
+  echo json_encode($logs, JSON_UNESCAPED_UNICODE);
+  $stmt->close();
 } catch (Exception $e) {
-  echo json_encode(["error" => $e->getMessage()]);
+  // On error return empty array (frontend will show "No transactions yet" or similar)
+  error_log("get_points_log error: " . $e->getMessage());
+  echo json_encode([], JSON_UNESCAPED_UNICODE);
 }
 
 $conn->close();
-?>

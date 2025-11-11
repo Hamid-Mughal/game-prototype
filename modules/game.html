@@ -1,7 +1,55 @@
-<h1 class="text-2xl sm:text-3xl font-bold mb-4 text-[#D48905]">🎮 Steem Hop Game</h1>
-<div class="bg-white p-4 rounded-lg shadow-sm border border-[#EAB515] flex flex-col items-center">
-  <canvas id="gameCanvas" width="400" height="500"></canvas>
-  <button id="startGame" class="mt-4 gold-btn px-4 py-2 rounded text-white">Start Game</button>
-  <p id="score" class="mt-3 text-[#4b3a00] text-sm font-semibold">Score: 0</p>
+<h1 class="text-2xl sm:text-3xl   mb-2 text-[#D48905]">
+  Steem Hop Game
+</h1>
+
+<div
+  class="bg-white p-4 rounded-3xl shadow-md border border-[#EAB515] flex flex-col items-center justify-center max-w-5xl mx-auto"
+>
+  <!-- ✅ Fullscreen-ready iframe -->
+  <iframe
+    id="steemhopGameFrame"
+    src="/steemhop/HTML5/index.html"
+    class="w-full h-[600px] sm:h-[400px] border-2 border-[#EAB515] rounded-2xl shadow-inner"
+    allow="fullscreen"
+  ></iframe>
+
 </div>
 
+<script>
+// ✅ Auto fullscreen when page loads
+window.addEventListener("load", () => {
+  const iframe = document.getElementById("steemhopGameFrame");
+
+  // Wait a bit to ensure iframe is ready
+  setTimeout(() => {
+    if (iframe.requestFullscreen) {
+      iframe.requestFullscreen();
+    } else if (iframe.webkitRequestFullscreen) {
+      iframe.webkitRequestFullscreen(); // Safari
+    } else if (iframe.msRequestFullscreen) {
+      iframe.msRequestFullscreen(); // IE11
+    }
+  }, 800);
+});
+
+// ✅ ESC key exits fullscreen and goes to dashboard (Laptop/Desktop)
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+      // Directly go to dashboard after exit
+      window.navigateTo("dashboard");
+      
+    }
+  }
+});
+
+// ✅ Detect manual fullscreen exit (Mobile & Desktop)
+document.addEventListener("fullscreenchange", () => {
+  if (!document.fullscreenElement) {
+   
+    // Go to dashboard automatically
+    window.navigateTo("dashboard");
+  }
+});
+</script>

@@ -1,3 +1,4 @@
+
 const loginScreen = document.getElementById("login-screen");
 const appScreen = document.getElementById("app-screen");
 const bottomNav = document.getElementById("bottom-nav");
@@ -19,7 +20,6 @@ function showRewardPopup(title, message) {
   `;
   document.body.appendChild(popup);
 
-  // Run confetti
   startConfetti("confettiCanvas");
 
   document.getElementById("popup-ok").onclick = () => {
@@ -97,7 +97,6 @@ function startConfetti(canvasId) {
 
   loop();
 
-  // Stop confetti after 4 seconds
   setTimeout(() => {
     canvas.remove();
   }, 4000);
@@ -106,17 +105,20 @@ function startConfetti(canvasId) {
 // ✅ Dynamic Page Loader
 async function loadPage(page, user = null) {
   window.loadPage = loadPage;
-  const res = await fetch(`modules/${page}.html`);
+
+  // 🔧 FIXED PATH (relative)
+  const res = await fetch(`./modules/${page}.html?update=${Date.now()}`);
   const html = await res.text();
   pageContent.innerHTML = html;
 
   if (page === "dashboard") {
-    const module = await import("./dashboard.js");
+    const module = await import(`./dashboard.js?update=${Date.now()}`);
     if (user) module.loadUserProfile(user);
   }
 
   if (page === "game") {
-    const module = await import(`./game.js?update=${Date.now()}`);
+    console.log("🎮 Loading embedded HTML5 game...");
+    // No import needed — iframe handles the HTML5 game
   }
 
   if (page === "leaderboard") {
@@ -146,7 +148,7 @@ async function loadPage(page, user = null) {
   }
 }
 
-// ✅ Show/Hide Loader
+// ✅ Loader Handling
 function showLoader() {
   loader.classList.remove("hidden");
   loader.classList.add("active");
@@ -156,6 +158,18 @@ function hideLoader() {
   setTimeout(() => loader.classList.add("hidden"), 400);
 }
 
+// ✅ Session Timeout
+const SESSION_TIMEOUT = 2 * 60 * 60 * 1000;
+const LAST_CLOSE_KEY = "steemhop_last_close_time";
+
+// ✅ Start Session
+function startSession(username) {
+  sessionStorage.clear();
+  sessionStorage.setItem("steemhop_user", username);
+  localStorage.setItem("steemhop_user", username);
+  localStorage.setItem(LAST_CLOSE_KEY, Date.now().toString());
+}
+
 // ✅ Login Logic
 document.getElementById("sign").onclick = () => {
   const user = document.getElementById("user").value.trim();
@@ -163,95 +177,121 @@ document.getElementById("sign").onclick = () => {
   if (!window.steem_keychain) return alert("❌ Steem Keychain not detected.");
 
   status.textContent = "⏳ Logging in...";
-  window.steem_keychain.requestSignBuffer(user, "hello_from_steem_hop", "Posting", async (r) => {
-    if (r.success) {
-      localStorage.setItem("steemhop_user", user);
-      showLoader();
+  window.steem_keychain.requestSignBuffer(
+    user,
+    "hello_from_steem_hop",
+    "Posting",
+    async (r) => {
+      if (r.success) {
+        startSession(user);
+        showLoader();
 
+        setTimeout(async () => {
+          loginScreen.classList.add("hidden");
+          appScreen.classList.remove("hidden");
+          bottomNav.classList.remove("hidden");
+
+          try {
+            const form = new URLSearchParams();
+            form.append("username", user);
+            const rewardRes = await fetch("php/login_reward.php", {
+              method: "POST",
+              body: form,
+            });
+            const rewardData = await rewardRes.json();
+
+            if (rewardData.success) {
+              showRewardPopup("🎉 Daily Reward", rewardData.message);
+              const userPointsEl = document.getElementById("userPoints");
+              if (userPointsEl && rewardData.total_points !== undefined) {
+                userPointsEl.textContent = rewardData.total_points;
+              }
+              window.dispatchEvent(new Event("pointsUpdated"));
+            }
+          } catch (err) {
+            console.warn("⚠️ Daily reward check failed:", err);
+          }
+
+          await loadPage("dashboard", user);
+          hideLoader();
+        }, 1000);
+      } else {
+        status.textContent = "❌ Login failed: " + r.message;
+      }
+    }
+  );
+};
+
+// ✅ Session Restore
+window.addEventListener("load", async () => {
+  let savedUser = sessionStorage.getItem("steemhop_user");
+  if (!savedUser && localStorage.getItem("steemhop_user")) {
+    savedUser = localStorage.getItem("steemhop_user");
+    sessionStorage.setItem("steemhop_user", savedUser);
+  }
+
+  const lastClose = parseInt(localStorage.getItem(LAST_CLOSE_KEY), 10);
+  const now = Date.now();
+
+  if (savedUser && lastClose) {
+    if (now - lastClose > SESSION_TIMEOUT) {
+      sessionStorage.clear();
+      localStorage.removeItem("steemhop_user");
+      localStorage.removeItem(LAST_CLOSE_KEY);
+      appScreen.classList.add("hidden");
+      loginScreen.classList.remove("hidden");
+      bottomNav.classList.add("hidden");
+    } else {
+      showLoader();
       setTimeout(async () => {
         loginScreen.classList.add("hidden");
         appScreen.classList.remove("hidden");
         bottomNav.classList.remove("hidden");
-
-        try {
-          const form = new URLSearchParams();
-          form.append("username", user);
-          const rewardRes = await fetch("php/login_reward.php", {
-            method: "POST",
-            body: form,
-          });
-          const rewardData = await rewardRes.json();
-
-          if (rewardData.success) {
-            showRewardPopup("🎉 Daily Reward", rewardData.message);
-            const userPointsEl = document.getElementById("userPoints");
-            if (userPointsEl && rewardData.total_points !== undefined) {
-              userPointsEl.textContent = rewardData.total_points;
-            }
-            window.dispatchEvent(new Event("pointsUpdated"));
-          }
-        } catch (err) {
-          console.warn("⚠️ Daily reward check failed:", err);
-        }
-
-        await loadPage("dashboard", user);
+        await loadPage("dashboard", savedUser);
         hideLoader();
-      }, 1000);
-    } else {
-      status.textContent = "❌ Login failed: " + r.message;
+        window.dispatchEvent(new Event("userSessionChanged"));
+      }, 800);
     }
-  });
-};
-
-// ✅ Auto-login on reload
-window.addEventListener("load", async () => {
-  const savedUser = localStorage.getItem("steemhop_user");
-  if (savedUser) {
-    showLoader();
-    setTimeout(async () => {
-      loginScreen.classList.add("hidden");
-      appScreen.classList.remove("hidden");
-      bottomNav.classList.remove("hidden");
-
-      await loadPage("dashboard", savedUser);
-      hideLoader();
-    }, 800);
   }
 });
 
 // ✅ Logout
+function logoutUser(
+  title = "👋 Logged Out",
+  message = "You have been logged out."
+) {
+  sessionStorage.clear();
+  localStorage.removeItem("steemhop_user");
+  localStorage.removeItem(LAST_CLOSE_KEY);
+  appScreen.classList.add("hidden");
+  loginScreen.classList.remove("hidden");
+  bottomNav.classList.add("hidden");
+  showRewardPopup(title, message);
+}
+
 ["logout", "logout-mobile"].forEach((id) => {
   const btn = document.getElementById(id);
-  if (btn) {
-    btn.addEventListener("click", () => {
-      localStorage.removeItem("steemhop_user");
-      appScreen.classList.add("hidden");
-      loginScreen.classList.remove("hidden");
-      bottomNav.classList.add("hidden");
-    });
-  }
+  if (btn) btn.addEventListener("click", () => logoutUser());
 });
 
 // ✅ Sidebar Navigation
-// ✅ Sidebar + Bottom Navigation (Improved)
 document.querySelectorAll("[data-page]").forEach((btn) => {
   btn.addEventListener("click", async () => {
     const page = btn.dataset.page;
-    const user = localStorage.getItem("steemhop_user");
+    const user = sessionStorage.getItem("steemhop_user");
+    if (!user) return logoutUser("⚠️ Login Required", "Please log in again.");
 
     showLoader();
     await loadPage(page, user);
     setTimeout(hideLoader, 500);
 
-    // Update active states
-    document.querySelectorAll("[data-page]").forEach((b) => b.classList.remove("active"));
+    document
+      .querySelectorAll("[data-page]")
+      .forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
 
-    // ✅ AUTO-CLOSE SIDEBAR ON MOBILE
     const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("overlay");
-
-    // If we're on mobile (sidebar is toggleable)
     if (window.innerWidth < 640 && sidebar && overlay) {
       sidebar.classList.add("-translate-x-full");
       overlay.classList.add("hidden");
@@ -259,7 +299,7 @@ document.querySelectorAll("[data-page]").forEach((btn) => {
   });
 });
 
-// ✅ Sidebar Toggler 
+// ✅ Sidebar Toggle
 const menuToggle = document.getElementById("menu-toggle");
 const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
@@ -276,39 +316,65 @@ if (menuToggle && sidebar && overlay) {
   });
 }
 
-// ✅ Auto Logout after 2 hours inactivity
-let inactivityTimer;
-const AUTO_LOGOUT_TIME = 2 * 60 * 60 * 1000;
-function resetInactivityTimer() {
-  clearTimeout(inactivityTimer);
-  inactivityTimer = setTimeout(autoLogout, AUTO_LOGOUT_TIME);
-}
-function autoLogout() {
-  const user = localStorage.getItem("steemhop_user");
-  if (user) {
-    showRewardPopup("⚠️ Auto Logout", "⏳ You were logged out due to inactivity.");
-    localStorage.removeItem("steemhop_user");
-    appScreen.classList.add("hidden");
-    loginScreen.classList.remove("hidden");
-    bottomNav.classList.add("hidden");
-  }
-}
-["mousemove", "mousedown", "keydown", "touchstart", "scroll"].forEach((evt) => {
-  window.addEventListener(evt, resetInactivityTimer);
-});
-window.addEventListener("load", () => {
-  const savedUser = localStorage.getItem("steemhop_user");
-  if (savedUser) resetInactivityTimer();
-});
-
 // ✅ Global Navigation
 window.navigateTo = async function (pageName) {
-  const user = localStorage.getItem("steemhop_user");
-  if (!user) return;
+  const user = sessionStorage.getItem("steemhop_user");
+  if (!user) return logoutUser("⚠️ Login Required", "Please log in again.");
   showLoader();
   await loadPage(pageName, user);
   setTimeout(hideLoader, 500);
-  document.querySelectorAll("[data-page]").forEach((b) => b.classList.remove("active"));
+  document
+    .querySelectorAll("[data-page]")
+    .forEach((b) => b.classList.remove("active"));
   const activeBtn = document.querySelector(`[data-page="${pageName}"]`);
   if (activeBtn) activeBtn.classList.add("active");
 };
+// ✅ Fullscreen Logic for Game Page with ESC → Dashboard
+async function enableGameFullscreen() {
+  const iframe = document.getElementById("steemhopGameFrame");
+  if (!iframe) return;
+
+  // 🔹 Automatically enter fullscreen after short delay
+  setTimeout(() => {
+    try {
+      if (iframe.requestFullscreen) {
+        iframe.requestFullscreen();
+      } else if (iframe.webkitRequestFullscreen) {
+        iframe.webkitRequestFullscreen(); // Safari
+      } else if (iframe.msRequestFullscreen) {
+        iframe.msRequestFullscreen(); // IE11
+      }
+    } catch (err) {}
+  }, 800);
+
+  // 🔹 Exit fullscreen and return to dashboard on ESC
+  document.addEventListener("keydown", async (e) => {
+    if (e.key === "Escape") {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+
+        window.navigateTo("dashboard");
+      } else {
+        window.navigateTo("dashboard");
+      }
+    }
+  });
+
+  // 🔹 Handle manual fullscreen exit (like mobile swipe)
+  document.addEventListener("fullscreenchange", async () => {
+    if (!document.fullscreenElement) {
+      window.navigateTo("dashboard");
+    }
+  });
+}
+
+// ✅ Extend loadPage() to trigger fullscreen only on game page
+const originalLoadPage = loadPage;
+window.loadPage = async function (page, user = null) {
+  await originalLoadPage(page, user);
+
+  if (page === "game") {
+    enableGameFullscreen();
+  }
+};
+

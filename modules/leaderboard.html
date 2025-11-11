@@ -1,7 +1,37 @@
-<h1 class="text-2xl sm:text-3xl font-bold mb-4 text-[#D48905]">🏆 Leaderboard</h1>
 
-<div class="bg-white p-4 sm:p-6 rounded-3xl shadow-md border border-[#EAB515]/70">
-  <ul id="leaderList" class="space-y-3 text-[#4b3a00] text-sm sm:text-base"></ul>
+<h1 class="text-2xl sm:text-3xl  mb-6 text-[#D48905] text-center">
+   Leaderboard
+</h1>
+
+<!-- 🥇 Top 3 Cards Section -->
+<div
+  id="top3Container"
+  class="grid grid-cols-3 gap-3 sm:gap-5 mb-6 max-w-5xl mx-auto"
+>
+  <!-- Dynamic cards will be injected here -->
+</div>
+
+<!-- 📋 Table for Remaining Players -->
+<div
+  class="bg-white p-4 sm:p-6 rounded-3xl shadow-md border border-[#EAB515]/70 max-w-5xl mx-auto overflow-x-auto"
+>
+  <table class="w-full text-left border-collapse">
+    <thead>
+      <tr class="bg-[#FFFBEA] border-b border-[#EAB515]/50 text-[#4b3a00] text-sm sm:text-base">
+        <th class="py-2 px-3 text-left">Rank #</th>
+        <th class="py-2 px-3 text-center sm:text-left">Player</th>
+        <th class="py-2 px-3">Level</th>
+        <th class="py-2 px-3 text-right">Points</th>
+      </tr>
+    </thead>
+    <tbody id="leaderTable" class="text-[#4b3a00] text-sm sm:text-base">
+      <tr>
+        <td colspan="4" class="text-center py-4 italic text-gray-500">
+          Loading leaderboard...
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 <!-- JS -->

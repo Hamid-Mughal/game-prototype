@@ -19,6 +19,7 @@ canvas {
   max-width: 100%;
   height: auto;
 }
+
 canvas {
   background-color: transparent !important;
   border: 3px solid #EAB515;
@@ -357,3 +358,23 @@ canvas {
   border-color: #D48905;
   box-shadow: 0 0 25px rgba(250, 204, 21, 0.4);
 }
+
+  table img {
+    display: inline-block !important;
+    width: 32px !important;
+    height: 32px !important;
+    object-fit: cover !important;
+    border-radius: 9999px;
+  }
+
+  td div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Optional: slightly boost row height */
+  td {
+    min-height: 40px;
+  }
+

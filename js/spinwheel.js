@@ -1,4 +1,4 @@
-// js/spinwheel.js
+// js/spinwheel.js (final multi-user + probability + free spin fix + smaller wheel)
 export async function initSpinWheel() {
   await new Promise((r) => setTimeout(r, 200));
 
@@ -15,15 +15,21 @@ export async function initSpinWheel() {
 
   console.log("✅ Spin wheel initialized properly.");
 
-  const prizes = ["Try Again", "0 Points", "5 Points", "10 Points", "15 Points"];
+  const basePrizes = ["Try Again", "0 Points", "5 Points", "10 Points", "15 Points"];
   const colors = ["#FFD700", "#FFB700", "#EAB515", "#F9C80E", "#FF8C00"];
 
+  let prizes = [...basePrizes];
   let isSpinning = false;
   let angle = 0;
+  let freeSpin = false;
 
   function resizeCanvas() {
     const parentWidth = canvas.parentElement.offsetWidth;
-    const size = Math.min(parentWidth * 0.8, 320);
+    // 🔹 Smaller default size for better mobile appearance
+    let size = Math.min(parentWidth * 0.7, 260);
+    if (window.innerWidth < 640) size = Math.min(parentWidth * 0.9, 220);
+    if (window.innerWidth < 400) size = Math.min(parentWidth * 0.95, 200);
+
     canvas.width = size;
     canvas.height = size;
     drawWheel();
@@ -59,6 +65,7 @@ export async function initSpinWheel() {
       ctx.restore();
     });
 
+    // Center circle
     ctx.beginPath();
     ctx.arc(0, 0, canvas.width / 8, 0, 2 * Math.PI);
     ctx.fillStyle = "#FFFBEA";
@@ -71,8 +78,34 @@ export async function initSpinWheel() {
 
   function spinWheel() {
     if (isSpinning) return;
+
+    const username = sessionStorage.getItem("steemhop_user");
+    if (!username) {
+      showPopup("⚠️ Please login first.", "warning");
+      return;
+    }
+
     isSpinning = true;
     result.textContent = "";
+
+    // 🎯 Random weighted probability
+    const probabilitySet = freeSpin
+      ? [
+          { prize: "0 Points", chance: 25 },
+          { prize: "5 Points", chance: 25 },
+          { prize: "10 Points", chance: 20 },
+          { prize: "15 Points", chance: 30 },
+        ]
+      : [
+          { prize: "Try Again", chance: 15 },
+          { prize: "0 Points", chance: 25 },
+          { prize: "5 Points", chance: 25 },
+          { prize: "10 Points", chance: 20 },
+          { prize: "15 Points", chance: 15 },
+        ];
+
+    prizes = probabilitySet.map((p) => p.prize);
+    drawWheel();
 
     const randomSpin = Math.random() * 360 + 1800;
     const startAngle = angle;
@@ -93,14 +126,14 @@ export async function initSpinWheel() {
       } else {
         angle = endAngle % 360;
         isSpinning = false;
-        showResult();
+        showResult(username, probabilitySet);
       }
     }
 
     animate();
   }
 
-  async function showResult() {
+  async function showResult(username, probabilitySet) {
     const slice = 360 / prizes.length;
     let adjustedAngle = (angle + 90) % 360;
     if (adjustedAngle < 0) adjustedAngle += 360;
@@ -109,13 +142,24 @@ export async function initSpinWheel() {
     const prize = prizes[index];
     result.textContent = `🎉 You got: ${prize}!`;
 
-    const username = localStorage.getItem("steemhop_user");
-    if (!username) return showPopup("⚠️ Please login first.", "warning");
-
     let score = 0;
     if (prize.includes("Points")) score = parseInt(prize);
     else score = 0;
 
+    // 🌀 Free spin behavior
+    if (prize === "Try Again" && !freeSpin) {
+      freeSpin = true;
+      showPopup("😅 Try Again! You’ve earned a free spin!", "warning");
+      return;
+    }
+
+    if (prize === "Try Again" && freeSpin) {
+      freeSpin = false;
+      await saveSpinResult(username, 0);
+      return;
+    }
+
+    freeSpin = false;
     await saveSpinResult(username, score);
   }
 
@@ -138,7 +182,7 @@ export async function initSpinWheel() {
       const message =
         score > 0
           ? `🎯 You won <strong>+${score}</strong> points!<br>Total: ${data.total_points}`
-          : `😅 Try again next time!`;
+          : `😅 Better luck next time!`;
 
       showPopup(message, score > 0 ? "success" : "warning", score);
 
@@ -153,6 +197,13 @@ export async function initSpinWheel() {
   drawWheel();
   resizeCanvas();
   spinButton.addEventListener("click", spinWheel);
+
+  window.addEventListener("userSessionChanged", () => {
+    console.log("🔄 Resetting spin wheel for new user...");
+    freeSpin = false;
+    result.textContent = "";
+    drawWheel();
+  });
 }
 
 /* === Animated Reward Popup === */
@@ -164,7 +215,6 @@ function showPopup(message, type = "success", points = 0) {
       ${points >= 10 ? "<h3>💥 Big Win!</h3>" : ""}
       <p>${message}</p>
       <button class="popup-btn">OK</button>
-      <div class="confetti"></div>
     </div>
   `;
 
@@ -174,7 +224,6 @@ function showPopup(message, type = "success", points = 0) {
   const btn = popup.querySelector(".popup-btn");
   btn.addEventListener("click", () => closePopup(popup));
 
-  // Auto close after 4s
   setTimeout(() => closePopup(popup), 4000);
 }
 

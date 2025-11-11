@@ -1,6 +1,7 @@
 <?php
+// php/login_reward.php — fixed: login points ONLY in points_log
 include 'db.php';
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
 $username = $_POST['username'] ?? '';
 
@@ -9,7 +10,7 @@ if (!$username) {
   exit;
 }
 
-// ✅ Check last login reward from points_log
+// ✅ Check last login reward from points_log (only)
 $stmt = $conn->prepare("
   SELECT created_at 
   FROM points_log 
@@ -40,20 +41,24 @@ if ($result && isset($result['created_at'])) {
 if ($rewardAllowed) {
   $points = 10;
 
-  // ✅ 1. Add to leaderboard
-  $stmt2 = $conn->prepare("INSERT INTO leaderboard (username, score, created_at) VALUES (?, ?, NOW())");
-  $stmt2->bind_param("si", $username, $points);
-  $stmt2->execute();
-  $stmt2->close();
+  // ✅ 1. Remove leaderboard insert (old behavior removed)
+  // 🚫 No leaderboard insertion for login rewards
 
-  // ✅ 2. Add to transaction log
-  $log = $conn->prepare("INSERT INTO points_log (username, source, points, created_at) VALUES (?, 'login', ?, NOW())");
+  // ✅ 2. Add to transaction log only
+  $log = $conn->prepare("
+    INSERT INTO points_log (username, source, points, created_at)
+    VALUES (?, 'login', ?, NOW())
+  ");
   $log->bind_param("si", $username, $points);
   $log->execute();
   $log->close();
 
-  // ✅ 3. Fetch total points
-  $sumStmt = $conn->prepare("SELECT COALESCE(SUM(score), 0) AS total_points FROM leaderboard WHERE username = ?");
+  // ✅ 3. Fetch total points (from points_log)
+  $sumStmt = $conn->prepare("
+    SELECT COALESCE(SUM(points), 0) AS total_points 
+    FROM points_log 
+    WHERE username = ?
+  ");
   $sumStmt->bind_param("s", $username);
   $sumStmt->execute();
   $sumResult = $sumStmt->get_result()->fetch_assoc();
@@ -69,7 +74,7 @@ if ($rewardAllowed) {
 } else {
   echo json_encode([
     "success" => false,
-    "message" => "⏳ You already received login reward."
+    "message" => "⏳ You already received today's login reward."
   ]);
 }
 
